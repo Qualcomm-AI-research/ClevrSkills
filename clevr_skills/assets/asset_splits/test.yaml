@@ -1,0 +1,246 @@
+# Unseen objects and textures altogether
+base_objects:
+  - '061_foam_brick'
+
+  # assembling kits objects
+  - '6' #= diamond shape
+  - '18' #= heart shape
+
+top_objects:
+  - '007_tuna_fish_can'
+  - '073-d_lego_duplo' #2x
+  - '12' #= G
+  - '13' #= V
+
+random_objects:
+  - '014_lemon'
+  - '030_fork'
+  - '037_scissors'
+  - '055_baseball'
+  - '052_extra_large_clamp'
+  - '065-e_cups'
+
+primitive_objects:
+  - 'star'
+
+texture_1:
+  - 'blue paisley'
+  - 'magma'
+  - 'red blue polka dot'
+  - 'swirl'
+  - 'yellow blue stripe'
+
+texture_1_dark:
+  - 'dark red_blue polka dot'
+  - 'dark yellow_blue stripe'
+
+texture_2:
+  - 'green purple polka dot'
+  - 'rainbow'
+  - 'red paisley'
+  - 'purple swirl'
+  - 'yellow purple stripe'
+
+texture_2_dark:
+  - 'dark green purple polka dot'
+  - 'dark purple swirl'
+  - 'dark yellow_purple stripe'
+
+# tasks
+SingleStack:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+SortStack:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Sort2d:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+FollowOrder:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Rearrange:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+PlaceOnTop:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+PlaceNextTo:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Rotate:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+RotateSymmetry:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+BalanceScale:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Pick:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+NovelNoun:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+NovelAdjective:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+NovelNounAdjective:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Trace:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Neighbour:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Throw:
+  top_objects: ${primitive_objects}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_2},${texture_2_dark}}
+  base_textures: ${merge:${texture_1},${texture_1_dark}}
+
+Move2d:
+  top_objects: ${primitive_objects}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_2},${texture_2_dark}}
+  base_textures: ${merge:${texture_1},${texture_1_dark}}
+
+Swap:
+  top_objects: ${primitive_objects}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_2},${texture_2_dark}}
+  base_textures: ${merge:${texture_1},${texture_1_dark}}
+
+SwapRotate:
+  top_objects: ${primitive_objects}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_2},${texture_2_dark}}
+  base_textures: ${merge:${texture_1},${texture_1_dark}}
+
+ThrowAndSort:
+  top_objects: ${primitive_objects}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_2},${texture_2_dark}}
+  base_textures: ${merge:${texture_1},${texture_1_dark}}
+
+Touch:
+  top_objects: ${merge:${primitive_objects}}
+  base_objects: ${merge:${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+Push:
+  top_objects: ${merge:${primitive_objects}}
+  base_objects: ${merge:${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+MoveWithoutHitting:
+  top_objects: ${primitive_objects}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_2},${texture_2_dark}}
+  base_textures: ${merge:${texture_1},${texture_1_dark}}
+
+MatchPose:
+  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}

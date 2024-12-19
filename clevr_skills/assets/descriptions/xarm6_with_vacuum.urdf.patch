@@ -1,0 +1,612 @@
+1,3c1,2
+< <?xml version="1.0"?>
+< <robot xmlns:xacro="http://ros.org/wiki/xacro">
+< 
+---
+> <?xml version="1.0" ?>
+> <robot name="xarm6">
+8,18c7,13
+< 
+< <xacro:macro name="xarm6_urdf" params="prefix
+< joint1_lower_limit:=${-2.0*pi}  joint1_upper_limit:=${2.0*pi}
+< joint2_lower_limit:=${-2.059}  joint2_upper_limit:=${2.0944}
+< joint3_lower_limit:=${-3.927}  joint3_upper_limit:=${0.19198}
+< joint4_lower_limit:=${-2.0*pi}  joint4_upper_limit:=${2.0*pi}
+< joint5_lower_limit:=${-1.69297}  joint5_upper_limit:=${pi}
+< joint6_lower_limit:=${-2.0*pi}  joint6_upper_limit:=${2.0*pi}
+< rs_d435i:=false">
+< 
+< <material name="${prefix}Black">
+---
+> <link name="world"/>
+> <joint name="world_joint" type="fixed">
+> <parent link="world"/>
+> <child link="link_base"/>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </joint>
+> <material name="Black">
+21,22c16
+< 
+< <material name="${prefix}Red">
+---
+> <material name="Red">
+25,26c19
+< 
+< <material name="${prefix}White">
+---
+> <material name="White">
+29,30c22
+< 
+< <material name="${prefix}Silver">
+---
+> <material name="Silver">
+33,34c25
+< 
+< <link name="${prefix}link_base">
+---
+> <link name="link_base">
+37c28
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/base.stl"/>
+---
+> <mesh filename="xarm6_description/base.stl"/>
+40c31
+< <material name="${prefix}White"/>
+---
+> <material name="White"/>
+44c35,47
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/base.stl"/>
+---
+> <mesh filename="xarm6_description/base_collision_part1.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/base_collision_part2.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/base_collision_part3.stl"/>
+60,61c63
+< 
+< <link name="${prefix}link1">
+---
+> <link name="link1">
+64c66
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link1.stl"/>
+---
+> <mesh filename="xarm6_description/link1.stl"/>
+67c69
+< <material name="${prefix}White"/>
+---
+> <material name="White"/>
+71c73,79
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link1.stl"/>
+---
+> <mesh filename="xarm6_description/link1_collision_part1.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link1_collision_part2.stl"/>
+87,90c95,97
+< 
+< <joint name="${prefix}joint1" type="revolute">
+< <parent link="${prefix}link_base"/>
+< <child  link="${prefix}link1"/>
+---
+> <joint name="joint1" type="revolute">
+> <parent link="link_base"/>
+> <child link="link1"/>
+94,95c101,102
+< lower="${joint1_lower_limit}"
+< upper="${joint1_upper_limit}"
+---
+> lower="-6.283185307179586"
+> upper="6.283185307179586"
+100,101c107
+< 
+< <link name="${prefix}link2">
+---
+> <link name="link2">
+104c110
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link2.stl"/>
+---
+> <mesh filename="xarm6_description/link2.stl"/>
+107c113
+< <material name="${prefix}White"/>
+---
+> <material name="White"/>
+111c117,135
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link2.stl"/>
+---
+> <mesh filename="xarm6_description/link2_collision_part1.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link2_collision_part2.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link2_collision_part3.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link2_collision_part4.stl"/>
+130,133c154,156
+< 
+< <joint name="${prefix}joint2" type="revolute">
+< <parent link="${prefix}link1"/>
+< <child link="${prefix}link2"/>
+---
+> <joint name="joint2" type="revolute">
+> <parent link="link1"/>
+> <child link="link2"/>
+137,138c160,161
+< lower="${joint2_lower_limit}"
+< upper="${joint2_upper_limit}"
+---
+> lower="-2.059"
+> upper="2.0944"
+143,144c166
+< 
+< <link name="${prefix}link3">
+---
+> <link name="link3">
+147c169
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link3.stl"/>
+---
+> <mesh filename="xarm6_description/link3.stl"/>
+150c172
+< <material name="${prefix}White"/>
+---
+> <material name="White"/>
+154c176,188
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link3.stl"/>
+---
+> <mesh filename="xarm6_description/link3_collision_part1.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link3_collision_part2.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link3_collision_part3.stl"/>
+159,165c193,195
+< <origin
+< xyz="0.06781 0.10749 0.01457"
+< rpy="0 0 0"/>
+< <mass
+< value="1.384"/>
+< <inertia
+< ixx="0.0053694"
+---
+> <origin rpy="0 0 0" xyz="0.06781 0.10749 0.01457"/>
+> <mass value="1.384"/>
+> <inertia ixx="0.0053694"
+173,176c203,205
+< 
+< <joint name="${prefix}joint3" type="revolute">
+< <parent link="${prefix}link2"/>
+< <child link="${prefix}link3"/>
+---
+> <joint name="joint3" type="revolute">
+> <parent link="link2"/>
+> <child link="link3"/>
+179,183c208
+< <limit
+< lower="${joint3_lower_limit}"
+< upper="${joint3_upper_limit}"
+< effort="32.0"
+< velocity="3.14"/>
+---
+> <limit lower="-3.927" upper="0.19198" effort="32.0" velocity="3.14"/>
+186,187c211
+< 
+< <link name="${prefix}link4">
+---
+> <link name="link4">
+190c214
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link4.stl"/>
+---
+> <mesh filename="xarm6_description/link4.stl"/>
+193c217
+< <material name="${prefix}White"/>
+---
+> <material name="White"/>
+197c221,245
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link4.stl"/>
+---
+> <mesh filename="xarm6_description/link4_collision_part1.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link4_collision_part2.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link4_collision_part3.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link4_collision_part4.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link4_collision_part5.stl"/>
+213,216c261,263
+< 
+< <joint name="${prefix}joint4" type="revolute">
+< <parent link="${prefix}link3"/>
+< <child link="${prefix}link4"/>
+---
+> <joint name="joint4" type="revolute">
+> <parent link="link3"/>
+> <child link="link4"/>
+220,221c267,268
+< lower="${joint4_lower_limit}"
+< upper="${joint4_upper_limit}"
+---
+> lower="-6.283185307179586"
+> upper="6.283185307179586"
+226,227c273
+< 
+< <link name="${prefix}link5">
+---
+> <link name="link5">
+230c276
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link5.stl"/>
+---
+> <mesh filename="xarm6_description/link5.stl"/>
+233c279
+< <material name="${prefix}White"/>
+---
+> <material name="White"/>
+237c283,295
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link5.stl"/>
+---
+> <mesh filename="xarm6_description/link5_collision_part1.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link5_collision_part2.stl"/>
+> </geometry>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> </collision>
+> <collision>
+> <geometry>
+> <mesh filename="xarm6_description/link5_collision_part3.stl"/>
+256,259c314,316
+< 
+< <joint name="${prefix}joint5" type="revolute">
+< <parent link="${prefix}link4"/>
+< <child link="${prefix}link5"/>
+---
+> <joint name="joint5" type="revolute">
+> <parent link="link4"/>
+> <child link="link5"/>
+263,264c320,321
+< lower="${joint5_lower_limit}"
+< upper="${joint5_upper_limit}"
+---
+> lower="-1.69297"
+> upper="3.141592653589793"
+269,270c326
+< 
+< <link name="${prefix}link6">
+---
+> <link name="link6">
+273c329
+< <mesh filename="package://xarm_description/meshes/xarm6/visual/link6.stl"/>
+---
+> <mesh filename="xarm6_description/link6.stl"/>
+276c332
+< <material name="${prefix}Silver"/>
+---
+> <material name="Silver"/>
+280c336
+< <mesh filename="package://xarm_description/meshes/collision/end_tool.STL"/>
+---
+> <mesh filename="xarm_gripper_description/end_tool.STL"/>
+299,302c355,357
+< 
+< <joint name="${prefix}joint6" type="revolute">
+< <parent link="${prefix}link5"/>
+< <child link="${prefix}link6"/>
+---
+> <joint name="joint6" type="revolute">
+> <parent link="link5"/>
+> <child link="link6"/>
+305,309c360
+< <limit
+< lower="${joint6_lower_limit}"
+< upper="${joint6_upper_limit}"
+< effort="20.0"
+< velocity="3.14"/>
+---
+> <limit effort="20.0" lower="-6.283185307179586" upper="6.283185307179586" velocity="3.14"/>
+313,314c364,371
+< <xacro:if value="${rs_d435i}">
+< <link name="${prefix}link_eef">
+---
+> 
+> <link name="vacuum_base_link">
+> <inertial>
+> <origin xyz="0.0 0.0 0.055" rpy="0 0 0"/>
+> <mass value="0.656"/>
+> <inertia
+> ixx="0.00047106" ixy="3.9292E-07" ixz="2.6537E-06" iyy="0.00033072" iyz="-1.0975E-05" izz="0.00025642"/>
+> </inertial>
+316,318c373
+< <origin
+< xyz="0 0 0"
+< rpy="0 0 0"/>
+---
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+320,321c375
+< <mesh
+< filename="package://d435i_xarm_setup/mesh/d435_with_cam_stand.STL"/>
+---
+> <mesh filename="xarm_vacuum_description/vacuum_gripper.STL"/>
+323c377,379
+< <material name="Silver"/>
+---
+> <material name="White">
+> <color rgba="1.0 1.0 1.0 1.0"/>
+> </material>
+326,328c382,388
+< <origin
+< xyz="0 0 0"
+< rpy="0 0 0"/>
+---
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_mount_ring_collision.stl"/>
+> </geometry>
+> </collision>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+330,331c390,417
+< <mesh
+< filename="package://d435i_xarm_setup/mesh/d435_with_cam_stand_collision.STL"/>
+---
+> <mesh filename="xarm_vacuum_description/vacuum_trunk_collision.stl"/>
+> </geometry>
+> </collision>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_head_collision.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_1">
+> <inertial>
+> <origin xyz="0.018 -0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_1.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_1.stl"/>
+335d420
+< </xacro:if>
+337,339d421
+< <xacro:unless value="${rs_d435i}">
+< <link name="${prefix}link_eef"/>
+< </xacro:unless>
+341,350c423,521
+< <joint
+< name="${prefix}joint_eef"
+< type="fixed">
+< <origin
+< xyz="0 0 0"
+< rpy="0 0 0"/>
+< <parent
+< link="${prefix}link6"/>
+< <child
+< link="${prefix}link_eef"/>
+---
+> <link name="suction_cup_2">
+> <inertial>
+> <origin xyz="0.018 0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_2.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_2.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_3">
+> <inertial>
+> <origin xyz="-0.018 -0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_3.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_3.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_4">
+> <inertial>
+> <origin xyz="-0.018 0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_4.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_4.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_5">
+> <inertial>
+> <origin xyz="0.0 0.0 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_5.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="xarm_vacuum_description/vacuum_suction_cup_collision_5.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> 
+> 
+> 
+> <joint name="joint_eef" type="fixed">
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <parent link="link6"/>
+> <child link="vacuum_base_link"/>
+> </joint>
+> 
+> <joint name="suction_cup_1_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_1"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+353c524,591
+< </xacro:macro>
+---
+> <joint name="suction_cup_2_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_2"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <joint name="suction_cup_3_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_3"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <joint name="suction_cup_4_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_4"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <joint name="suction_cup_5_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_5"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <!--- NOTE THAT THE COLLISION BOX WAS MANUALLY MODIFIED TO AVOID SELF-COLLISION WITH LINK5! -->
+> <link name="camera_link">
+> <inertial>
+> <mass value="0.072"/>
+> <origin xyz="0 0 0"/>
+> <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257"/>
+> </inertial>
+> <visual>
+> <origin xyz="0.03199636936187744 0 0" rpy="0 0 3.141593"/>
+> <origin xyz="0.03199636936187744 0 -0.015" rpy="0 0 3.141593"/>
+> <geometry>
+> <box size="0.090 0.025 0.025"/>
+> </geometry>
+> 
+> <material name="Silver"/>
+> </visual>
+> <collision>
+> <origin xyz="0.03199636936187744 0 -0.010" rpy="0 0 3.141593"/>
+> <geometry>
+> <box size="0.080 0.022 0.020"/>
+> </geometry>
+> </collision>
+> </link>
+> <joint name="joint_camera" type="fixed">
+> <origin xyz="0.07273013144731522 -0.03199636936187744 -0.03696126118302345" rpy="-0.0001707253698296617 -0.0010818151339083931 1.59426607864835"/>
+> <parent link="vacuum_base_link"/>
+> <child link="camera_link"/>
+> </joint>
+> 
+> <link name="link_tcp"/>
+> 
+> <joint name="joint_tcp" type="fixed">
+> <origin rpy="0 0 0" xyz="0 0 0.1254"/>
+> <parent link="vacuum_base_link"/>
+> <child link="link_tcp"/>
+> </joint>

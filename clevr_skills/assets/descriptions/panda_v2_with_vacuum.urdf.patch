@@ -1,0 +1,219 @@
+6c6
+< <robot name="panda">
+---
+> <robot name="panda_vacuum">
+210a211,424
+> </joint>
+> <joint name="panda_hand_joint" type="fixed">
+> <parent link="panda_link8"/>
+> <child link="vacuum_base_link"/>
+> <origin rpy="0 0 -0.7853981633974483" xyz="0 0 0"/>
+> </joint>
+> 
+> <link name="vacuum_base_link">
+> <inertial>
+> <origin xyz="0.0 0.0 0.055" rpy="0 0 0"/>
+> <mass value="0.656"/>
+> <inertia
+> ixx="0.00047106" ixy="3.9292E-07" ixz="2.6537E-06" iyy="0.00033072" iyz="-1.0975E-05" izz="0.00025642"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_mount_ring.stl"/>
+> </geometry>
+> <material name="White">
+> <color rgba="1.0 1.0 1.0 1.0"/>
+> </material>
+> </visual>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_trunk.stl"/>
+> </geometry>
+> <material name="White">
+> <color rgba="1.0 1.0 1.0 1.0"/>
+> </material>
+> </visual>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_head.stl"/>
+> </geometry>
+> <material name="White">
+> <color rgba="1.0 1.0 1.0 1.0"/>
+> </material>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_mount_ring.stl"/>
+> </geometry>
+> </collision>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_trunk.stl"/>
+> </geometry>
+> </collision>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_head.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_1">
+> <inertial>
+> <origin xyz="0.018 -0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_1.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_1.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> 
+> <link name="suction_cup_2">
+> <inertial>
+> <origin xyz="0.018 0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_2.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_2.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_3">
+> <inertial>
+> <origin xyz="-0.018 -0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_3.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_3.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_4">
+> <inertial>
+> <origin xyz="-0.018 0.025 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_4.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_4.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> <link name="suction_cup_5">
+> <inertial>
+> <origin xyz="0.0 0.0 0.12" rpy="0 0 0"/>
+> <mass value="0.002"/>
+> <inertia
+> ixx="5.167e-7" ixy="0" ixz="0" iyy="5.167e-7" iyz="0" izz="5.167e-7"/>
+> </inertial>
+> <visual>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_5.stl"/>
+> </geometry>
+> </visual>
+> <collision>
+> <origin xyz="0 0 0" rpy="0 0 0"/>
+> <geometry>
+> <mesh filename="simple_vacuum/simple_vacuum_cup_5.stl"/>
+> </geometry>
+> </collision>
+> </link>
+> 
+> 
+> <joint name="suction_cup_1_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_1"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <joint name="suction_cup_2_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_2"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <joint name="suction_cup_3_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_3"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <joint name="suction_cup_4_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_4"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <joint name="suction_cup_5_joint" type="prismatic">
+> <parent link="vacuum_base_link"/>
+> <child link="suction_cup_5"/>
+> <limit effort="100.0" lower="-0.0015" upper="0.0015" velocity="0.5"/>
+> <origin rpy="0 0 0" xyz="0.0 0 0.0"/>
+> <axis xyz="0 0 1"/>
+> </joint>
+> 
+> <link name="link_tcp"/>
+> 
+> <joint name="joint_tcp" type="fixed">
+> <origin rpy="0 0 0" xyz="0 0 0.126"/>
+> <parent link="vacuum_base_link"/>
+> <child link="link_tcp"/>

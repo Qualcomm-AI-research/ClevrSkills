@@ -1,0 +1,22 @@
+# PyCharm
+.idea
+
+# VSCode
+.vscode
+
+# MAC OS
+.DS_Store
+
+# pytest
+.coverage
+.pytest
+.pytest_cache
+
+# Python
+*__pycache__*
+*.py[cod]
+*.cpython-36.pyc
+*.egg-info
+
+# Not needed in the container
+check/*

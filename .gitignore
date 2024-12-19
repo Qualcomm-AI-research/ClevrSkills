@@ -1,0 +1,55 @@
+# compilation and distribution
+_ext
+*.so
+build/
+dist/
+
+# ipython/jupyter notebooks
+*.ipynb
+**/.ipynb_checkpoints/
+
+# Editor temporaries
+*.swn
+*.swo
+*.swp
+*~
+
+# PyCharm
+.idea
+
+# VSCode
+.vscode
+
+# pytest
+.coverage
+.pytest
+.pytest_cache
+
+# MAC OS
+.DS_Store
+
+# Python
+*__pycache__*
+*.py[cod]
+*.cpython-36.pyc
+*.egg-info
+
+# project-relevant
+imgui.ini
+
+# videos and images
+*.mp4
+*.png
+*.jpg
+*.npy
+*.h5
+*.convex.stl
+
+# checking folder
+check/
+
+# logs and assets that should not be checked-in.
+logs/
+clevr_skills/assets/assembling_kits/
+clevr_skills/assets/mani_skill2_ycb/
+clevr_skills/assets/vima_textures/

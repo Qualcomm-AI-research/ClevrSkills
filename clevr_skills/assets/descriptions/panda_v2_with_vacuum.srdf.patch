@@ -1,0 +1,101 @@
+2c2
+< <robot name="panda">
+---
+> <robot name="panda_vacuum">
+20,23c20,28
+< <group name="hand">
+< <link name="panda_hand"/>
+< <link name="panda_leftfinger"/>
+< <link name="panda_rightfinger"/>
+---
+> 
+> <group name="gripper">
+> <link name="vacuum_base_link"/>
+> <link name="suction_cup_1"/>
+> <link name="suction_cup_2"/>
+> <link name="suction_cup_3"/>
+> <link name="suction_cup_4"/>
+> <link name="suction_cup_5"/>
+> <link name="link_tcp"/>
+24a30,40
+> 
+> <group name="gripper_without_camera">
+> <link name="link_tcp"/>
+> <link name="vacuum_base_link"/>
+> <link name="suction_cup_1"/>
+> <link name="suction_cup_2"/>
+> <link name="suction_cup_3"/>
+> <link name="suction_cup_4"/>
+> <link name="suction_cup_5"/>
+> </group>
+> 
+40,51c56,60
+< <disable_collisions link1="panda_hand" link2="panda_leftfinger" reason="Adjacent"/>
+< <disable_collisions link1="panda_hand" link2="panda_link3" reason="Never"/>
+< <disable_collisions link1="panda_hand" link2="panda_link4" reason="Never"/>
+< <disable_collisions link1="panda_hand" link2="panda_link5" reason="Default"/>
+< <disable_collisions link1="panda_hand" link2="panda_link6" reason="Never"/>
+< <disable_collisions link1="panda_hand" link2="panda_link7" reason="Default"/>
+< <disable_collisions link1="panda_hand" link2="panda_rightfinger" reason="Adjacent"/>
+< <disable_collisions link1="panda_leftfinger" link2="panda_link3" reason="Never"/>
+< <disable_collisions link1="panda_leftfinger" link2="panda_link4" reason="Never"/>
+< <disable_collisions link1="panda_leftfinger" link2="panda_link6" reason="Never"/>
+< <disable_collisions link1="panda_leftfinger" link2="panda_link7" reason="Never"/>
+< <disable_collisions link1="panda_leftfinger" link2="panda_rightfinger" reason="Default"/>
+---
+> <disable_collisions link1="vacuum_base_link" link2="panda_link3" reason="Never"/>
+> <disable_collisions link1="vacuum_base_link" link2="panda_link4" reason="Never"/>
+> <disable_collisions link1="vacuum_base_link" link2="panda_link5" reason="Default"/>
+> <disable_collisions link1="vacuum_base_link" link2="panda_link6" reason="Never"/>
+> <disable_collisions link1="vacuum_base_link" link2="panda_link7" reason="Default"/>
+66d74
+< <disable_collisions link1="panda_link3" link2="panda_rightfinger" reason="Never"/>
+70d77
+< <disable_collisions link1="panda_link4" link2="panda_rightfinger" reason="Never"/>
+74,76c81,122
+< <disable_collisions link1="panda_link6" link2="panda_rightfinger" reason="Never"/>
+< <disable_collisions link1="panda_link7" link2="panda_rightfinger" reason="Never"/>
+< <disable_collisions link1="panda_link7" link2="panda_hand" reason="Default"/>
+---
+> <disable_collisions link1="panda_link7" link2="vacuum_base_link" reason="Default"/>
+> 
+> 
+> <disable_collisions link1="vacuum_base_link" link2="suction_cup_1" reason="Adjacent"/>
+> <disable_collisions link1="vacuum_base_link" link2="suction_cup_2" reason="Adjacent"/>
+> <disable_collisions link1="vacuum_base_link" link2="suction_cup_3" reason="Adjacent"/>
+> <disable_collisions link1="vacuum_base_link" link2="suction_cup_4" reason="Adjacent"/>
+> <disable_collisions link1="vacuum_base_link" link2="suction_cup_5" reason="Adjacent"/>
+> 
+> <disable_collisions link1="suction_cup_1" link2="suction_cup_2" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_1" link2="suction_cup_3" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_1" link2="suction_cup_4" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_1" link2="suction_cup_5" reason="Adjacent"/>
+> 
+> <disable_collisions link1="suction_cup_2" link2="suction_cup_1" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_2" link2="suction_cup_3" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_2" link2="suction_cup_4" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_2" link2="suction_cup_5" reason="Adjacent"/>
+> 
+> <disable_collisions link1="suction_cup_3" link2="suction_cup_1" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_3" link2="suction_cup_2" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_3" link2="suction_cup_4" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_3" link2="suction_cup_5" reason="Adjacent"/>
+> 
+> <disable_collisions link1="suction_cup_4" link2="suction_cup_1" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_4" link2="suction_cup_2" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_4" link2="suction_cup_3" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_4" link2="suction_cup_5" reason="Adjacent"/>
+> 
+> <disable_collisions link1="suction_cup_5" link2="suction_cup_1" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_5" link2="suction_cup_2" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_5" link2="suction_cup_3" reason="Adjacent"/>
+> <disable_collisions link1="suction_cup_5" link2="suction_cup_4" reason="Adjacent"/>
+> 
+> <disable_collisions link1="link_tcp" link2="suction_cup_1" reason="Adjacent"/>
+> <disable_collisions link1="link_tcp" link2="suction_cup_2" reason="Adjacent"/>
+> <disable_collisions link1="link_tcp" link2="suction_cup_3" reason="Adjacent"/>
+> <disable_collisions link1="link_tcp" link2="suction_cup_4" reason="Adjacent"/>
+> <disable_collisions link1="link_tcp" link2="suction_cup_5" reason="Adjacent"/>
+> 
+> 
+> 
