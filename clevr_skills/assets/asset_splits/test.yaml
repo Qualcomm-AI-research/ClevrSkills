@@ -8,17 +8,14 @@ base_objects:
 
 top_objects:
   - '007_tuna_fish_can'
-  - '073-d_lego_duplo' #2x
   - '12' #= G
   - '13' #= V
 
 random_objects:
   - '014_lemon'
-  - '030_fork'
   - '037_scissors'
   - '055_baseball'
   - '052_extra_large_clamp'
-  - '065-e_cups'
 
 primitive_objects:
   - 'star'

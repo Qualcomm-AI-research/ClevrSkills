@@ -154,7 +154,7 @@ class PlaceOnTop(Task):
 
         self.predicate = Inside2d(self._env, self.main_actor, self.main_area)
 
-        verb = "Put"
+        verb = "Place" if self._spawn_at_gripper else "Pick and place"
 
         self.prompts = [
             f"{verb} {get_actor_description(self.main_actor)} on "

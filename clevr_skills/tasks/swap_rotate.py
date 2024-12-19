@@ -137,7 +137,7 @@ class SwapRotate(Swap):
 
         self.prompts = [
             f"Swap positions of {get_actor_description(actor_a)} and "
-            f"{get_actor_description(actor_b)} but rotate them by "
+            f"{get_actor_description(actor_b)} while rotating them by "
             f"{abs(self.rot_degrees)} degrees "
             f"{['anti-clockwise', 'clockwise'][self.clockwise]}",
         ]

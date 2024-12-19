@@ -168,7 +168,6 @@ class NovelAdjective(PlaceOnTop):
             static=False,
         )
         self.main_area = self._area_actors[0]
-        self.main_area_no_tex = self._area_no_tex[0]
 
         for actor in self._actors:
             self._place_actor_at_rand_pose_v2(actor)
@@ -190,7 +189,7 @@ class NovelAdjective(PlaceOnTop):
         )
         self.prompts = [
             f"{examples}. Put the {adj} {get_actor_description(self.main_actor_no_tex)} "
-            f"on {get_actor_description(self.main_area_no_tex)}"
+            f"on {get_actor_description(self.main_area)}"
         ]
 
     def initialize_task(self):

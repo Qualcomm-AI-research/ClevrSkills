@@ -118,7 +118,6 @@ class ClevrSkillsEnv(BaseEnv):
         arm_controller_pos_lower=None,
         arm_controller_pos_upper=None,
         tabletop_texture: Union[str, List[float]] = os.path.join(VT_DIR, "wood_light.png"),
-        vis_table: bool = False,
         floor_texture: Optional[Union[str, List[float]]] = None,
         extra_obs: bool = False,
         task_args: Optional[Dict] = None,
@@ -181,7 +180,6 @@ class ClevrSkillsEnv(BaseEnv):
 
         self._tabletop_texture = tabletop_texture
         self._floor_texture = floor_texture
-        self._vis_table = vis_table
 
         self._contact_during_control_step = []
         self._contact_during_last_sim_step = []
@@ -278,7 +276,13 @@ class ClevrSkillsEnv(BaseEnv):
         if self.bg_name is not None:
             return
 
-        super()._setup_lighting()
+        shadow = self.enable_shadow
+        self._scene.set_ambient_light([0.2, 0.2, 0.2])
+        # Only the first of directional lights can have shadow
+        self._scene.add_directional_light(
+            [1, 1, -1], [0.8, 0.8, 0.8], shadow=shadow, scale=5, shadow_map_size=2048
+        )
+        self._scene.add_directional_light([0, 0, -1], [0.8, 0.8, 0.8])
 
     def _add_ground_pretty(self):
         """
@@ -288,52 +292,51 @@ class ClevrSkillsEnv(BaseEnv):
         :return: None
         """
         # Add the default Sapien ground, but don't render it
-        self._ground = self._add_ground(altitude=self._ground_altitude, render=not self._vis_table)
+        self._ground = self._add_ground(altitude=self._ground_altitude, render=False)
 
         # Create table-top
-        if self._vis_table:
-            render_material = self._renderer.create_material()
-            if isinstance(self._tabletop_texture, str):
-                render_material.set_base_color([0.0, 0.0, 0.0, 1.0])
-                render_material.set_diffuse_texture_from_file(self._tabletop_texture)
-            else:
-                render_material.set_base_color(list(self._tabletop_texture))
-            render_material.set_metallic(0.1)
-            render_material.set_specular(0.5)
-            self._tabletop = mesh_primitives.add_cube_actor(
-                self._scene,
-                self._renderer,
-                width=1.5,
-                depth=1.5,
-                height=0.01,
-                name="ground",  # must be called "ground" (will be excluded from world point cloud)
-                render_material=render_material,
-                static=True,
-                collision_geometry=False,
-            )  # This is visual only. The actual ground will be used as collision geometry
-            self._tabletop.set_pose(sapien.Pose([-0.5, 0.0, -0.005]))
+        render_material = self._renderer.create_material()
+        if isinstance(self._tabletop_texture, str):
+            render_material.set_base_color([0.0, 0.0, 0.0, 1.0])
+            render_material.set_diffuse_texture_from_file(self._tabletop_texture)
+        else:
+            render_material.set_base_color(list(self._tabletop_texture))
+        render_material.set_metallic(0.1)
+        render_material.set_specular(0.5)
+        self._tabletop = mesh_primitives.add_cube_actor(
+            self._scene,
+            self._renderer,
+            width=1.5,
+            depth=1.5,
+            height=0.01,
+            name="ground",  # must be called "ground" (will be excluded from world point cloud)
+            render_material=render_material,
+            static=True,
+            collision_geometry=False,
+        )  # This is visual only. The actual ground will be used as collision geometry
+        self._tabletop.set_pose(sapien.Pose([-0.5, 0.0, -0.005]))
 
-            # Create extended ground
-            render_material = self._renderer.create_material()
-            if isinstance(self._floor_texture, str):
-                render_material.set_base_color([0.0, 0.0, 0.0, 1.0])
-                render_material.set_diffuse_texture_from_file(self._floor_texture)
-            else:
-                render_material.set_base_color(list(self._floor_texture))
-            render_material.set_metallic(0.1)
-            render_material.set_specular(0.5)
-            self._floor = mesh_primitives.add_cube_actor(
-                self._scene,
-                self._renderer,
-                width=100,
-                depth=100,
-                height=0.005,
-                name="ground",  # must be called "ground" (will be excluded from world point cloud)
-                render_material=render_material,
-                static=True,
-                collision_geometry=False,
-            )  # This is visual only. The actual ground will be used as collision geometry
-            self._floor.set_pose(sapien.Pose([-0.5, 0.0, -0.005]))
+        # Create extended ground
+        render_material = self._renderer.create_material()
+        if isinstance(self._floor_texture, str):
+            render_material.set_base_color([0.0, 0.0, 0.0, 1.0])
+            render_material.set_diffuse_texture_from_file(self._floor_texture)
+        else:
+            render_material.set_base_color(list(self._floor_texture))
+        render_material.set_metallic(0.1)
+        render_material.set_specular(0.5)
+        self._floor = mesh_primitives.add_cube_actor(
+            self._scene,
+            self._renderer,
+            width=100,
+            depth=100,
+            height=0.005,
+            name="ground",  # must be called "ground" (will be excluded from world point cloud)
+            render_material=render_material,
+            static=True,
+            collision_geometry=False,
+        )  # This is visual only. The actual ground will be used as collision geometry
+        self._floor.set_pose(sapien.Pose([-0.5, 0.0, -0.005]))
 
     def _load_actors(self):
         """

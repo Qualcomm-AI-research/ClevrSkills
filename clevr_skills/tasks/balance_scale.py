@@ -56,7 +56,7 @@ class BalanceScaleTask(Task):
             ],
             [-0.25, 0.3],
         ]
-        self._num_actors = self._sample_int(min=2, max=num_actors-1, sample=sample_num_actors)
+        self._num_actors = self._sample_int(min=2, max=num_actors, sample=sample_num_actors)
         self._plate_actors = []
         self.actor_textures = None
         self._scale = None
@@ -70,14 +70,13 @@ class BalanceScaleTask(Task):
         This function should load (create) the actors, setup predicates and prompts.
         It is guaranteed to be called before get_textual_description() and get_predicates()
         such that it can be used to initialize the entire Task
-        :return:
         """
         # Add a cylinder to prevent objects from spawning too close to the robot
         temp_cylinder = mesh_primitives.add_cylinder_actor(
             self._scene,
             self._renderer,
-            width=0.4,
-            depth=0.4,
+            width=0.475,
+            depth=0.475,
             height=0.1,
             density=1000,
             name="temp_cylinder",
@@ -142,13 +141,13 @@ class BalanceScaleTask(Task):
         ]
 
         # Create the actors that are to-be-placed on the scale
-        for actor_idx, h in enumerate(block_heights):
+        for _, h in enumerate(block_heights):
             render_material = render_materials[0]
             actor_size = (0.1, 0.1, h)
             width = actor_size[0]
             depth = actor_size[1]
             height = actor_size[2]
-            actor_name = f"object_{actor_idx}"
+            actor_name = f"{self.actor_textures[0][0]} {primitive_name}"
             fn = self.model_factory.primitives[primitive_name]
             actor = fn(
                 self._scene,
@@ -183,7 +182,8 @@ class BalanceScaleTask(Task):
         )
 
         self.prompts = [
-            f"Place all the objects on the scale while keeping it in balance",
+            f"Place all the {self.actor_textures[0][0]} {primitive_name}s on the "
+            f"scale while keeping it in balance",
         ]
 
     def get_task_actors(self) -> List[sapien.Actor]:
@@ -197,10 +197,6 @@ class BalanceScaleTask(Task):
         :return: all the textures that are used with corresponding task actors
         """
         return []
-
-    def get_textual_description(self) -> str:
-        desc = "Place all the objects on the scale while keeping it in balance"
-        return desc
 
     def get_predicate(self) -> Predicate:
         return self.predicate

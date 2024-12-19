@@ -271,8 +271,6 @@ def main(args, proc_id: int = 0, num_procs: int = 1):
         kwargs["tabletop_texture"] = args.tabletop_texture
     if args.floor_texture:
         kwargs["floor_texture"] = args.floor_texture
-    if args.vis_table:
-        kwargs["vis_table"] = args.vis_table
 
     env = gym.make(
         "ClevrSkills-v0",
@@ -448,7 +446,6 @@ def get_args_parser():
         default=None,
         help="Color of the tabletop (if --tabletop-texture is not specified).",
     )
-    parser.add_argument("--vis-table", action="store_true", help="Visualize table top if true.")
 
     # help=argparse.SUPPRESS means: these options will not be visible on the command line help
     parser.add_argument(

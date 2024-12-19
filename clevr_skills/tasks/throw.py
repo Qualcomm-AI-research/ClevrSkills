@@ -208,9 +208,11 @@ class Throw(Task):
                 if self._topple_target:
                     self.prompts = [
                         f"Throw the {get_actor_description(self._throw_actor)} to the "
-                        f"{get_actor_description(self._target_actor)} such that it falls over",
+                        f"{get_actor_description(self._target_actor)} such that the "
+                        f"{get_actor_description(self._target_actor)} falls over",
                         f"Hit the {get_actor_description(self._target_actor)} with the "
-                        f"{get_actor_description(self._throw_actor)} such that it falls over",
+                        f"{get_actor_description(self._throw_actor)} such that the "
+                        f"{get_actor_description(self._target_actor)} falls over",
                     ]
                 else:
                     self.prompts = [

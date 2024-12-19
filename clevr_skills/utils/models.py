@@ -385,7 +385,7 @@ class ModelAndTextureFactory:
 
         self.obj_scale = {"070-b_colored_wood_blocks": 2.0, "062_dice": 2.0, "036_wood_block": 0.5}
         self.obj_density_mul = {"036_wood_block": 0.25}
-        self.obj_orientation = {}
+        self.obj_orientation = {"006_mustard_bottle": euler2quat(np.pi / 2, 0, 0)}
 
     def _get_size(self, obj_name):
         """

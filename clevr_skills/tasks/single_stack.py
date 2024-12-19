@@ -192,5 +192,7 @@ class SingleStackTask(Task):
                 desc
                 + f"{get_actor_description(top_actor)} on {get_actor_description(bottom_actor)}"
             )
+        if self.topple:
+            desc = desc + " and then topple the stack"
 
         return desc
