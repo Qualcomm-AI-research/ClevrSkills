@@ -19,7 +19,7 @@ TASK_PROMPT_IDX = {
     "follow_order": [0],
     "follow_order_restore": [0],
     "rearrange": [0],
-    "rearrange_restore": [1],
+    "rearrange_restore": [0],
     "rotate_restore": [0],
     "simple_manipulation": [0],
     "single_stack": [0],
