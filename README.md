@@ -250,7 +250,14 @@ to point to a valid display. See the troubleshooting section below for a workaro
 
 
 ## Troubleshooting
+
+### Docker
  
+When installing Docker in a Linux environment, be sure to install Docker *Engine*, not Docker *Desktop*.
+
+Docker Desktop does not support GPUs inside the container; when starting your container with `--gpus=all`, you
+will get an error along the lines of `OCI runtime create failed`.
+
 ### Vulkan driver
 
 One of the following errors may occur indicating that the vulkan driver might be broken:
