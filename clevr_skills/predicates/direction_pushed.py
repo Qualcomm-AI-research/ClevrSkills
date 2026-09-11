@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import sapien.core as sapien
@@ -85,18 +86,21 @@ class DirectionPushed(AtPositionPushed):
         """
         :return: dense reward (float in range [0, 5]).
         """
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["actor_has_been_grasped"]:  # not grasping!
+        if eval_result["actor_has_been_grasped"]:  # not grasping!
             return 0.0
-        if eval["actor_at_pos"]:  # max 5 reward
+        if eval_result["actor_at_pos"]:  # max 5 reward
             # if the actor is at the target position, reward "no contact" and getting
             # away from the actor
             return (
                 3.0
-                + (0 if eval["actor_ee_contact"] else 1)
+                + (0 if eval_result["actor_ee_contact"] else 1)
                 + np.exp(
-                    min(0, 100 * (max(0, eval["actor_ee_distance"]) - self._distance_threshold))
+                    min(
+                        0,
+                        100 * (max(0, eval_result["actor_ee_distance"]) - self._distance_threshold),
+                    )
                 )
             )
         # max 3 reward
@@ -104,7 +108,7 @@ class DirectionPushed(AtPositionPushed):
         # + low distance between EE and actor
         # + getting the actor close to the target
         # + EE being "behind" the actor, relative the target pose
-        reward = np.exp(-5 * (max(0, eval["actor_ee_distance"]))) + np.exp(
+        reward = np.exp(-5 * (max(0, eval_result["actor_ee_distance"]))) + np.exp(
             -5 * np.linalg.norm(self.actor.pose.p[0:2] - self.pose.p[0:2])
         )
 

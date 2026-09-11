@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Dict
 
@@ -132,13 +133,8 @@ class PickMove3dThrowSolver(AbstractSolver):
 
         if self._sub_solver is None:
             if grasping:
-                # Can't we test here for distance to pre-throw pose?
-                # And if close enough, throw
-                # else wind?
                 if not close_to_prethrow_pose:
-                    self.action_state["action"] = (
-                        "winding"  # this should not be needed; should use sub-solvers instead
-                    )
+                    self.action_state["action"] = "winding"
                     self._sub_solver = Move3dSolver(
                         self._env,
                         self.prethrow_pose,

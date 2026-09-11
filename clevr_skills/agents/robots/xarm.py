@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 # Code adapted from https://github.com/haosulab/ManiSkill
 # Copyright (c) 2024, ManiSkill Contributors, licensed under the Apache License, Version 2.0
@@ -58,7 +59,8 @@ class XArm(BaseAgent):
         :param max_angle: Threshold on the angle between the actor and the fingers.
         :return: True if actor is currently grasped by the gripper
         """
-        assert isinstance(actor, sapien.ActorBase), type(actor)
+        if not isinstance(actor, sapien.ActorBase):
+            raise TypeError(type(actor))
         contacts = self.scene.get_contacts()
 
         limpulse = get_pairwise_contact_impulse(contacts, self.finger1_link, actor)
@@ -83,7 +85,8 @@ class XArm(BaseAgent):
         :param min_impulse: Threshold on impulse between fingers and actors.
         :return: True if either finger is in contact with the actor.
         """
-        assert isinstance(actor, sapien.ActorBase), type(actor)
+        if not isinstance(actor, sapien.ActorBase):
+            raise TypeError(type(actor))
         contacts = self.scene.get_contacts()
 
         limpulse = get_pairwise_contact_impulse(contacts, self.finger1_link, actor)

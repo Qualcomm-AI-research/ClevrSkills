@@ -1,9 +1,12 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import argparse
 import copy
 import tempfile
+
+import numpy as np
 
 from clevr_skills import clevr_skills_oracle
 from clevr_skills.utils.load_traj import find_trajectories
@@ -81,3 +84,52 @@ def test_clevr_skill_oracle_balance_scale():
         clevr_skills_oracle.main(args)
         traj = find_trajectories(temp_path, require_success=True)
         assert len(traj) >= 1
+
+
+class DummyOracleEnv:
+    task_args = {}
+
+    def __init__(self):
+        self.unwrapped = self
+        self._episode_info = {"reset_kwargs": {"options": {"record_dir": ""}}}
+
+
+def test_unsuccessful_eps_records_failed_seed(monkeypatch):
+    args = copy.deepcopy(default_args)
+    args.record_dir = tempfile.mkdtemp()
+    args.num_episodes = 2
+    args.seed = 42
+
+    env = DummyOracleEnv()
+    outcomes = iter([False, True])
+
+    def fake_generate_episode(call_args, call_env, _ue, episode_idx, _num_procs, enable_viewer):
+        del _ue, _num_procs, enable_viewer
+        success = next(outcomes)
+        call_env._episode_info["reset_kwargs"]["options"][
+            "record_dir"
+        ] = f"{call_args.record_dir}/traj_{call_args.seed + episode_idx}"
+        return success
+
+    monkeypatch.setattr(clevr_skills_oracle.gym, "make", lambda *args, **kwargs: env)
+    monkeypatch.setattr(clevr_skills_oracle, "wrap_record_env", lambda env, *args: env)
+    monkeypatch.setattr(clevr_skills_oracle, "generate_episode", fake_generate_episode)
+    monkeypatch.setattr(clevr_skills_oracle, "clear_temp_dir", lambda: None)
+
+    clevr_skills_oracle.main(args, proc_id=0, num_procs=2)
+
+    unsuccessful = np.load(f"{args.record_dir}/unsuccessful_eps_0.npy").tolist()
+    assert unsuccessful == [42]
+
+
+def test_merge_unsuccessful_eps_ignores_existing_merged_file(tmp_path):
+    np.save(tmp_path / "unsuccessful_eps.npy", [999])
+    np.save(tmp_path / "unsuccessful_eps_0.npy", [46])
+    np.save(tmp_path / "unsuccessful_eps_1.npy", [44])
+
+    merged = clevr_skills_oracle.merge_unsuccessful_eps(str(tmp_path))
+
+    assert merged == [44, 46]
+    assert np.load(tmp_path / "unsuccessful_eps.npy").tolist() == [44, 46]
+    assert not (tmp_path / "unsuccessful_eps_0.npy").exists()
+    assert not (tmp_path / "unsuccessful_eps_1.npy").exists()

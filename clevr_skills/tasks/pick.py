@@ -1,11 +1,12 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from typing import List
 
 import sapien.core as sapien
 
 from clevr_skills.predicates.pick_predicate import PickPredicate
+from clevr_skills.utils.action_trace import at_get_pose
 from clevr_skills.utils.actor_placement import get_random_non_overlapping_poses_2d_v2
 from clevr_skills.utils.render import get_render_material
 from clevr_skills.utils.visualize_prompt import get_actor_description, get_texture_description
@@ -107,6 +108,12 @@ class Pick(Task):
             f"Grab the object with {get_texture_description(self._pick_actor)} texture",
             f"Lift the object with {get_texture_description(self._pick_actor)} texture",
         ]
+
+        self.init_state = {
+            "objects": {
+                get_actor_description(act): str(at_get_pose(act.pose)) for act in self._actors
+            },
+        }
 
     def get_task_actors(self) -> List[sapien.Actor]:
         """

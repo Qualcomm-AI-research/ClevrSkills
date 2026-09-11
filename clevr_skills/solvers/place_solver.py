@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from typing import Dict
 
@@ -102,6 +102,7 @@ class PlaceSolver(AbstractSolver):
                 if actor_min_z - drop_target_z < 0:
                     # actor is above target and close to target Z: release
                     gripper = self.gripper_off
+                    delta_p[2] = (actor_min_z - drop_target_z) / 2.0
                 else:
                     # actor is above target
                     delta_p = target_pos - actor_pose.p
@@ -111,7 +112,10 @@ class PlaceSolver(AbstractSolver):
                 target_pos[2] += self._drop_distance
                 delta_p = target_pos - actor_pose.p
         else:
+            drop_target_z = self._target_pose.p[2] + self._drop_distance
             self._done = True
+            gripper = self.gripper_off
+            delta_p[2] = (actor_min_z - drop_target_z) / 2.0
 
         target_pose = Pose(ee_pose.p + delta_p, target_ori)
         return self.return_global_pose_action(target_pose, gripper=gripper)

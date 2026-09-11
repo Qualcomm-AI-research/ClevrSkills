@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Dict, Tuple
 
@@ -89,9 +90,9 @@ class TracePredicate(EnvPredicate):
         :return: dense reward (float in range [0, 2]).
         """
 
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 6.0
 
         ee_pose = self._env.agent.ee_link.pose

@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from typing import List
 
@@ -9,6 +9,7 @@ from clevr_skills.predicates.on_top import OnTop
 from clevr_skills.predicates.once import Once
 from clevr_skills.predicates.sequence import Sequence
 from clevr_skills.predicates.topple_structure import ToppleStructurePredicate
+from clevr_skills.utils.action_trace import at_get_actor, at_get_pose
 from clevr_skills.utils.render import get_render_material
 from clevr_skills.utils.visualize_prompt import get_actor_description, get_texture_description
 
@@ -158,6 +159,12 @@ class SingleStackTask(Task):
             for idx, prompt in enumerate(self.prompts):
                 self.prompts[idx] = prompt + " and then topple the stack"
 
+        self.init_state = {
+            "objects": {
+                get_actor_description(act): str(at_get_pose(act.pose)) for act in self._actors
+            },
+        }
+
     def get_task_actors(self) -> List[sapien.Actor]:
         """
         :return: list of actors used in the task
@@ -192,7 +199,5 @@ class SingleStackTask(Task):
                 desc
                 + f"{get_actor_description(top_actor)} on {get_actor_description(bottom_actor)}"
             )
-        if self.topple:
-            desc = desc + " and then topple the stack"
 
         return desc

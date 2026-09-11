@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 # This is a convoluted scheme to get temporary directories that get automatically deleted, mostly.
 # The reason this is implemented this way is that some classes in sapien will retain the filename

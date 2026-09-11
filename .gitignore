@@ -53,3 +53,5 @@ logs/
 clevr_skills/assets/assembling_kits/
 clevr_skills/assets/mani_skill2_ycb/
 clevr_skills/assets/vima_textures/
+clevr_skills/assets/descriptions/
+docker/assets/

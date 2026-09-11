@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from typing import List
 
@@ -8,8 +8,11 @@ import sapien.core as sapien
 from clevr_skills.predicates.at_position import AtPosition
 from clevr_skills.predicates.at_position_pushed import AtPositionPushed
 from clevr_skills.predicates.swap_predicate import SwapPredicate
-from clevr_skills.utils.action_trace import at_get_actor
-from clevr_skills.utils.actor_placement import get_random_non_overlapping_poses_2d_with_actor_sizes
+from clevr_skills.utils.action_trace import at_get_actor, at_get_pose
+from clevr_skills.utils.actor_placement import (
+    get_poses_for_swapping,
+    get_random_non_overlapping_poses_2d_with_actor_sizes,
+)
 from clevr_skills.utils.models import get_actor_size
 from clevr_skills.utils.render import get_render_material
 from clevr_skills.utils.visualize_prompt import get_actor_description
@@ -92,9 +95,8 @@ class Swap(Task):
         actor_sizes = [get_actor_size(ac) for ac in self._actors]
 
         # generate poses
-        self._target_poses = get_random_non_overlapping_poses_2d_with_actor_sizes(
+        self._target_poses = get_poses_for_swapping(
             self._env,
-            self._num_actors + 1,
             self._workspace,
             actor_sizes + [max(actor_sizes, key=lambda x: x.prod())],
         )
@@ -142,6 +144,14 @@ class Swap(Task):
         ]
         if self._push:
             self.prompts = [prompt + " by pushing" for prompt in self.prompts]
+
+        self.init_state = {
+            "objects": {
+                get_actor_description(actor_a): str(at_get_pose(actor_a.pose)),
+                get_actor_description(actor_b): str(at_get_pose(actor_b.pose)),
+            },
+            "buffer_pose": str(at_get_pose(buff_pose)),
+        }
 
     def get_task_actors(self) -> List[sapien.Actor]:
         """

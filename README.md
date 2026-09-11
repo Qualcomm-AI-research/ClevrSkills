@@ -1,22 +1,20 @@
-# ClevrSkills: Compositional Language And Visual Understanding in Robotics
+# ClevrSkills: Compositional Language and Visual Understanding in Robotics
 <div align="center">
 <a href="https://arxiv.org/abs/2411.09052"><img src='https://img.shields.io/badge/arXiv-ClevrSkills-red' alt='Paper PDF'></a>
 
-<!-- ![License](https://img.shields.io/github/license/TRI-ML/prismatic-vlms?style=for-the-badge) -->
 </div>
 
-ClevrSkills is a task suite built on [ManiSkill2](https://github.com/haosulab/ManiSkill/tree/v0.5.3) for benchmarking compositional generalization in robotics. The suite includes a curriculum of tasks with three levels of compositional understanding, starting with simple tasks requiring basic motor skills. It includes 33 tasks in total with 12 tasks in L0, 15 tasks in L1 and 6 tasks in L2 levels respectively. It also includes an accompanying dataset of ~330k successful trajectories available [here](https://www.qualcomm.com/developer/software/clevrskills-dataset) generated using oracle policies found in this repository.
+ClevrSkills is a task suite built on [ManiSkill2](https://github.com/haosulab/ManiSkill/tree/v0.5.3) for benchmarking compositional generalization in robotics. The suite includes a curriculum of tasks with three levels of compositional understanding, starting with simple tasks requiring basic motor skills. It includes 33 tasks in total with 12 tasks in L0, 15 tasks in L1 and 6 tasks in L2 levels respectively. It also includes an accompanying dataset of ~330k successful trajectories, available on the [Qualcomm ClevrSkills dataset page](https://www.qualcomm.com/developer/software/clevrskills-dataset), generated using oracle policies found in this repository.
 
-<!-- update the link to public repo. -->
 This repo contains code for the gym environment, the task suite and oracle policies to generate the dataset. To evaluate your policies on ClevrSkills see [clevrskills-bench](https://github.com/Qualcomm-AI-research/clevrskills-bench).
 
 Some example tasks in L0 are shown below.
 
 ![L0 Tasks](clevr_skills/assets/images/grid_small.gif)
- 
+
 ## Getting started
 
-The code was tested on Ubuntu 22.04, Python>=3.10, Torch 2.0.1 and Docker v20.10. 
+The code was tested on Ubuntu 22.04, Python>=3.10, Torch 2.0.1 and Docker v20.10.
 
 First, clone the repository.
 
@@ -40,9 +38,9 @@ Once the container is up and running, download the required assets using
 PYTHONPATH=./ bash scripts/download_resources.sh
 ```
 
-Note that the resource will end up inside the Docker container, so when restarting the container you will have to download them again.
+Note that the resources will end up inside the Docker container, so when restarting the container you will have to download them again.
 
-After downloading the resources, the (unit) tests may be run as a sanity check. 
+After downloading the resources, the (unit) tests may be run as a sanity check.
 The tests include actual rollouts for several tasks; they may take 10 to 15 minutes to complete.
 
 ```bash
@@ -52,15 +50,15 @@ pytest tests
 If any of the resources are missing (e.g., download failed), a warning should be issued:
 
 ```text
-Warning: it looks like {resources} are missing; please double check and run download_resources.sh if needed
+Warning: it looks like {missing_resources} are missing; please double check and run download_resources.sh if needed
 ```
 
 If you see this warning, make sure you ran the `download_resources` script (see above) and make sure it did not run into any errors.
 
 You are now ready to use ClevrSkills and benchmark your policies on it. See [clevrskills-bench](https://github.com/Qualcomm-AI-research/clevrskills-bench) for an example where we benchmark our StreamRoboLM model.
 
-All the tasks in ClevrSkills (and ManiSkill2) follow the gymnasium interface. 
-This [code snippet](https://gymnasium.farama.org/introduction/basic_usage/#interacting-with-the-environment) shows very concretely how a policy is supposed to interact with the environment.
+All the tasks in ClevrSkills (and ManiSkill2) follow the gymnasium interface.
+This [code snippet](https://gymnasium.farama.org/introduction/basic_usage/#your-first-rl-program) shows very concretely how a policy is supposed to interact with the environment.
 
 ## Repository structure
 
@@ -74,22 +72,22 @@ ClevrSkills
 │   ├───agents: Contains code for the simulated robots supported in ClevrSkills. For
 │   │   now, we support UFACTORY xArm 6 and Panda robots with vacuum grippers.
 │   │
-│   ├───assets: Contains all the assets (objects, robot URDFs, the background template for 
-│   │   video generation, etc). It also contains the object collection splits used to generate 
+│   ├───assets: Contains all the assets (objects, robot URDFs, the background template for
+│   │   video generation, etc). It also contains the object collection splits used to generate
 │   │   train/test data. The assets downloaded by `scripts/download_resources.sh` land here.
 │   │
 │   ├───dataset_converters: Converters used to convert the dataset generated to fit
-│   │   different baseline requirements. 
-│   │  
-│   ├───predicates: In ClevrSkills, a predicate is a building block for specifying tasks. 
-│   │   There are both physical predicates like `on_top` (something must be on top of 
+│   │   different baseline requirements.
+│   │
+│   ├───predicates: In ClevrSkills, a predicate is a building block for specifying tasks.
+│   │   There are both physical predicates like `on_top` (something must be on top of
 │   │   something else) and logical predicates like `sequence` (the sub-predicates in
-│   │   the sequence must be fulfilled sequentially). All ClevrSkills tasks consist 
-│   │   of one or more predicates. Predicates also generate reward and success. 
-│   │   In this directory, we define all the predicates that can be used to define tasks. 
-│   │ 
-│   ├───solvers: Solvers are policies that control the robot to solve predicates. 
-|   |   Once we have our tasks defined in predicates, we can use specific solvers
+│   │   the sequence must be fulfilled sequentially). All ClevrSkills tasks consist
+│   │   of one or more predicates. Predicates also generate reward and success.
+│   │   In this directory, we define all the predicates that can be used to define tasks.
+│   │
+│   ├───solvers: Solvers are policies that control the robot to solve predicates.
+│   │   Once we have our tasks defined in predicates, we can use specific solvers
 │   │   to solve each of the predicates automatically thus generating ground truth
 │   │   data for training down-stream models.
 │   │
@@ -101,11 +99,11 @@ ClevrSkills
 │   ├───utils: A collection of ad hoc utils used across the repo.
 │   │
 │   ├───clevr_skills_env.py: The base environment class.
-│   │  
+│   │
 │   ├───clevr_skills_oracle.py: Script generating demonstration trajectories for specific
 │   │   tasks by first randomly initializing instances of the tasks and then using
 │   │   solvers (oracle policies) to solve the tasks and save the resulting
-│   │   trajectories. 
+│   │   trajectories.
 │   │
 │   └───visualize_all_tasks.py: Script to visualize all the tasks implemented in
 │       ClevrSkills to an `.mp4` video.
@@ -136,19 +134,40 @@ python clevr_skills/clevr_skills_oracle.py --num-episodes 3 \
 --seed 43 --num-procs 1 --save-video
 ```
 
-Once the script completes execution, the generated trajectories will be available in the `check/pick/traj_*` directories. 
-While most of the contents are self-explanatory, please refer to `Dataset Structure` 
-section [here](https://www.qualcomm.com/developer/software/clevrskills-dataset) for a short description on each item. 
+Once the script completes execution, the generated trajectories will be available in the `check/pick/traj_*` directories.
+While most of the contents are self-explanatory, please refer to the [`Dataset Structure` section on the Qualcomm ClevrSkills dataset page](https://www.qualcomm.com/developer/software/clevrskills-dataset) for a short description of each item.
 The `load_traj.py` script (see below) provides an easy interface to load the data. Whenever `--save-video` is
-specified on the command-line (as in the example above), an `.mp4` visualization of the trajectory will 
+specified on the command-line (as in the example above), an `.mp4` visualization of the trajectory will
 be written, allowing for visual inspection.
 
 We also provide example scripts to generate trajectories for all the tasks in [L0 - Simple Tasks](scripts/datagen_simple.sh), [L1 - Intermediate Tasks](scripts/datagen_intermediate.sh) and [L2 - Complex Tasks](scripts/datagen_complex.sh). Please inspect these scripts for an overview of the available tasks.
 
+### ClevrSkills-Mem split
+
+The ClevrSkills-Mem split contains memory-dependent task variants that require the policy to remember earlier states, intermediate goals or previously specified objects. Example data-generation commands are provided in [scripts/datagen_memory.sh](scripts/datagen_memory.sh); the script writes trajectories under `$PROJECT_ROOT/memory_tasks`, uses the `cs_mem` asset split, and saves videos for visual inspection.
+
+After generating trajectories, use [scripts/generate_task_scratchpad.py](scripts/generate_task_scratchpad.py) to create per-trajectory scratchpad JSON files for memory tasks. Pass the directory containing `traj_*` subdirectories with `--path`, choose the matching converter with `--task`, and optionally use `--simplify`, `--use_bbox` or `--use_2dpoints` to post-process the scratchpads. For example:
+
+```bash
+PYTHONPATH=./ python scripts/generate_task_scratchpad.py \
+  --path $PROJECT_ROOT/memory_tasks/touch_pick \
+  --task touchpick
+```
+
+This writes `scratchpad_v1.json` inside each `traj_*` directory. The task names accepted by the script are `touchpick`, `swap`, `stacktopple`, `placenexttorestore` and `rotaterestore`.
+
+The memory-dependent tasks are:
+
+- `rotate_restore` (`Rotate`, `restore=True`): Rotate the instructed object by the specified angle and direction, then restore it to its initial pose.
+- `stack_topple` (`SingleStack`, `topple=True`): Build an ordered stack of objects, then topple the completed stack.
+- `swap` (`Swap`): Swap the initial positions of two specified objects using a temporary buffer position.
+- `touch_pick` (`TouchPick`): Touch one specified object, reset the end effector, then pick up a different specified object.
+- `place_next_restore` (`PlaceNextTo`, `restore=True`): Place one object in the instructed relation to another object, then restore it to its initial position.
+
 ### How to evaluate
 
-The benchmark consists of three levels of tasks. 
-The tasks and the task parameters are given in [clevr_skills/utils/task_utils.py](clevr_skills/utils/task_utils.py) and 
+The benchmark consists of three levels of tasks.
+The tasks and the task parameters are given in [clevr_skills/utils/task_utils.py](clevr_skills/utils/task_utils.py) and
 can be accessed as follows:
 
 ```python
@@ -163,7 +182,7 @@ To create the environments used in our paper on a particular level of tasks on a
 from clevr_skills.utils.task_utils import get_clevrskills_env
 
 envs = get_clevrskills_env(L0_tasks, split="train")
-``` 
+```
 where the split can take `"train"` which denotes asset split used during training and `"test"` which denotes asset split including unseen objects and textures during training. Both the splits can be found at [clevr_skills/assets/asset_splits/](clevr_skills/assets/asset_splits/).
 
 To initialize a task with `task_name` on a particular `seed` and evaluate,
@@ -171,7 +190,7 @@ To initialize a task with `task_name` on a particular `seed` and evaluate,
 ```python
 from clevr_skills.utils.record_env import RecordEnv
 
-env = envs[task_name] 
+env = envs[task_name]
 
 # optionally wrap it in record env to record the trajectory
 env = RecordEnv(env, output_dir="/path/to/save/trajs", save_trajectory=True, save_video=True)
@@ -184,7 +203,7 @@ prompts = unw_env.task.get_prompts()
 prompt_assets = unw_env.task.get_prompt_assets()
 
 for i in range(MAX_LEN):
-  action = model.predict(prompt, prompt_assets, obs) # predict 
+  action = model.predict(prompt, prompt_assets, obs) # predict
   obs, reward, done, _, info = env.step(action)
 
 # if wrapped in RecordEnv, flush video and trajectory
@@ -196,7 +215,7 @@ See [clevrskills-bench](https://github.com/Qualcomm-AI-research/clevrskills-benc
 
 ### Visualizing tasks to `mp4` video.
 
-The script can be used to generate example trajectories of all the tasks implemented in ClevrSkills and visualize them to an `.mp4` file. 
+The script can be used to generate example trajectories of all the tasks implemented in ClevrSkills and visualize them to an `.mp4` file.
 The following example generates trajectories for all the tasks in L0 and visualizes them in a grid, as seen in animation at the top of this README.
 
 ```bash
@@ -214,7 +233,7 @@ python clevr_skills/visualize_all_tasks.py --output-dir vis_rotate/ \
 ### Loading a trajectory
 
 The file [`clevr_skills/utils/load_traj.py`](clevr_skills/utils/load_traj.py) implements a utility class that makes it easy to load data from a ClevrSkills trajectory.
-Following snippet shows an example of how the `Traj` class can be used to load a trajectory and fetch actions and multi-modal prompts. 
+Following snippet shows an example of how the `Traj` class can be used to load a trajectory and fetch actions and multi-modal prompts.
 This can serve as a starting point for your dataloader to train models on ClevrSkills data.
 
 ```python
@@ -231,7 +250,7 @@ There is also a function to recursively scan a directory tree for trajectories:
 ```python
 from clevr_skills.utils.load_traj import Traj, find_trajectories
 
-for traj_path in find_trajectories("/path/to/dataset")
+for traj_path in find_trajectories("/path/to/dataset"):
     traj = Traj(traj_path)
 ```
 
@@ -240,19 +259,19 @@ For more details, please refer to [`clevr_skills/utils/load_traj.py`](clevr_skil
 ### Sapien Viewer visualization
 
 Both `clevr_skills_oracle.py` and `visualize_all_tasks.py` will open an interactive window when `--enable-sapien-viewer` is passed
-on the command-line. The [Sapien Viewer](https://sapien.ucsd.edu/docs/2.2/tutorial/basic/viewer.html) 
+on the command-line. The [Sapien Viewer](https://sapien.ucsd.edu/docs/2.2/tutorial/basic/viewer.html)
 shows an interactive visualization of the scene and allows the user to inspect many aspects of it.
-Also, the execution of the policy can be paused. Pausing the scene is recommended during interaction with the viewer 
+Also, the execution of the policy can be paused. Pausing the scene is recommended during interaction with the viewer
 because otherwise graphics and motion can be choppy.
 
-For Sapien Viewer to work, an X11 display with Vulkan support must be available. You must set the `DISPLAY` environment 
+For Sapien Viewer to work, an X11 display with Vulkan support must be available. You must set the `DISPLAY` environment
 to point to a valid display. See the troubleshooting section below for a workaround when an X11 display is not available.
 
 
 ## Troubleshooting
 
 ### Docker
- 
+
 When installing Docker in a Linux environment, be sure to install Docker *Engine*, not Docker *Desktop*.
 
 Docker Desktop does not support GPUs inside the container; when starting your container with `--gpus=all`, you
@@ -283,7 +302,7 @@ RuntimeError: filesystem error: cannot make canonical path: No such file or dire
 ### X11 display
 
 When no X11 display is available, the Sapien viewer can't be used.
-Except for this the environment should work fine, although you will 
+Except for this the environment should work fine, although you will
 see this error / warning from the  Sapien engine. It can be safely ignored:
 
 ```
@@ -293,8 +312,8 @@ see this error / warning from the  Sapien engine. It can be safely ignored:
 
 If you want an X11 display anyway, you'll need to set your DISPLAY environment variable to a valid display.
 
-See general guides [here](https://www.baeldung.com/linux/docker-container-gui-applications) and
-[here](https://www.baeldung.com/linux/no-x11-display-error#bd-starting-a-remote-x-client) on how to connect
+See the [Docker GUI applications guide](https://www.baeldung.com/linux/docker-container-gui-applications) and
+the [remote X client guide](https://www.baeldung.com/linux/no-x11-display-error#bd-starting-a-remote-x-client) for how to connect
 ClevrSkills (running inside a Docker container ) to your X11 display outside of the Docker.
 
 We offer two specific recipies below:
@@ -340,7 +359,7 @@ an X11 display outside the Docker container:
     ```bash
     sudo systemctl restart ssh
     ```
-   
+
     And pass the `-X` flag (or if trusted: `-Y`) to your SSH connect command.
 
 #### X11 display through Xvfb and VNC
@@ -386,7 +405,7 @@ python3 -m isort --profile black .
 
 If you find our code useful, please cite:
 
-```
+```bibtex
 @article{haresh2024clevrskills,
   title={ClevrSkills: Compositional Language And Visual Understanding in Robotics},
   author={Haresh, Sanjay and Dijkman, Daniel and Bhattacharyya, Apratim and Memisevic, Roland},

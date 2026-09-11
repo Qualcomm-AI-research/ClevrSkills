@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List
 
@@ -19,9 +20,10 @@ class TraceOrder(Order):
         :param predicates: List of TracePredicate.
         """
         for pred in predicates:
-            assert isinstance(
-                pred, TracePredicate
-            ), f"{type(pred)} not allowed in TraceOrder. Only use with TracePredicate"
+            if not isinstance(pred, TracePredicate):
+                raise TypeError(
+                    f"{type(pred)} not allowed in TraceOrder. Only use with TracePredicate"
+                )
 
         super().__init__(name, predicates)
 

@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 import math
 
 from clevr_skills.utils.permute import get_permutation_first_indices, get_permutation_indices

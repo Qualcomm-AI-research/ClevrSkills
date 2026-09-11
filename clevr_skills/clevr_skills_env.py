@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # Code adapted from https://github.com/haosulab/ManiSkill
 # Copyright (c) 2024, ManiSkill Contributors, licensed under the Apache License, Version 2.0
@@ -9,7 +9,7 @@ import os
 import types
 from collections import OrderedDict
 from copy import deepcopy
-from typing import Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import mplib
 import numpy as np
@@ -42,7 +42,7 @@ from clevr_skills.utils.temp_dir import reset_temp_dir
 from clevr_skills.utils.textures import VT_DIR
 
 
-def check_resources_downloaded():
+def check_resources_downloaded() -> None:
     """
     Checks if resources are present and logs a warning if something seems missing.
     """
@@ -196,14 +196,14 @@ class ClevrSkillsEnv(BaseEnv):
 
         super().__init__(*args, **kwargs)
 
-    def close_viewer(self):
+    def close_viewer(self) -> None:
         """
         Closes the Sapien viewer
         :return:
         """
         super()._close_viewer()
 
-    def _get_default_scene_config(self):
+    def _get_default_scene_config(self) -> sapien.SceneConfig:
         """
         :return: Default Sapien scene config. We reduce the contact offset to 5mm (from 20mm).
         Otherwise, objects poke through thin containers (such as bowl) too easily.
@@ -214,7 +214,11 @@ class ClevrSkillsEnv(BaseEnv):
         scene_config.contact_offset = 0.005
         return scene_config
 
-    def reset(self, seed=None, options=None):
+    def reset(
+        self,
+        seed: Optional[int] = None,
+        options: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[OrderedDict, Dict[str, Any]]:
         """
         :param seed: If set, the seed to new episode.
         :param options: Forwarded to ManiSkill2 sapien BaseEnv.reset().
@@ -234,7 +238,7 @@ class ClevrSkillsEnv(BaseEnv):
         self._return_visiblity = self.extra_obs
         if options and "record_dir" in options:
             self.task_args["record_dir"] = options["record_dir"]
-            if not self.task_args["record_dir"] is None:
+            if self.task_args["record_dir"] is not None:
                 self._return_render_image = True
                 self._return_bounding_box = True
                 self._return_visiblity = True
@@ -258,7 +262,7 @@ class ClevrSkillsEnv(BaseEnv):
 
         return result
 
-    def _clear(self):
+    def _clear(self) -> None:
         """
         Internal function, called by ManiSkill2 sapien BaseEnv.
         :return: None
@@ -268,7 +272,7 @@ class ClevrSkillsEnv(BaseEnv):
         self._contact_during_control_step = []
         self._contact_during_last_sim_step = []
 
-    def _setup_lighting(self):
+    def _setup_lighting(self) -> None:
         """
         Sets up lighting for scene.
         :return:
@@ -284,7 +288,7 @@ class ClevrSkillsEnv(BaseEnv):
         )
         self._scene.add_directional_light([0, 0, -1], [0.8, 0.8, 0.8])
 
-    def _add_ground_pretty(self):
+    def _add_ground_pretty(self) -> None:
         """
         Creates a prettier version of the ground that consists of a central "table top"
         and an extended "floor". The color/texture of these elements is determined by constructor
@@ -338,7 +342,7 @@ class ClevrSkillsEnv(BaseEnv):
         )  # This is visual only. The actual ground will be used as collision geometry
         self._floor.set_pose(sapien.Pose([-0.5, 0.0, -0.005]))
 
-    def _load_actors(self):
+    def _load_actors(self) -> None:
         """
         Loads actors, sets up task
         :return: None
@@ -349,7 +353,7 @@ class ClevrSkillsEnv(BaseEnv):
         self.task = self.task_class(self, **self.task_args)
         self.task.setup_task()
 
-    def _configure_agent(self):
+    def _configure_agent(self) -> None:
         """
         Called by ManiSkill2 sapien BaseEnv. Sets the agent configuration (the type of robot + customizations)
         :return: None
@@ -357,7 +361,7 @@ class ClevrSkillsEnv(BaseEnv):
         agent_cls: Type[XArm6Vacuum] = self.SUPPORTED_ROBOTS[self.robot_uuid]
         self._agent_cfg = self._get_customized_agent_config(agent_cls.get_default_config())
 
-    def _load_agent(self):
+    def _load_agent(self) -> None:
         """
         Creates the robot (i.e., self.agent)
         :return: None
@@ -373,7 +377,7 @@ class ClevrSkillsEnv(BaseEnv):
         self._initialize_agent()  # call this here, otherwise the agent will be in the
         # wrong place during actor placement.
 
-    def _initialize_agent(self):
+    def _initialize_agent(self) -> None:
         """
         Places the robot in the initial pose.
         ManiSkill2 defines several variants of this function
@@ -392,7 +396,7 @@ class ClevrSkillsEnv(BaseEnv):
         else:
             raise NotImplementedError(self.robot_uuid)
 
-    def _initialize_agent_v1(self):
+    def _initialize_agent_v1(self) -> None:
         """
         Places the robot in the initial pose.
         ManiSkill2 defines several variants of this function
@@ -413,7 +417,7 @@ class ClevrSkillsEnv(BaseEnv):
         else:
             raise NotImplementedError(self.robot_uuid)
 
-    def _register_cameras(self):
+    def _register_cameras(self) -> None:
         """
         :return: A list of CameraConfigs the define the parameters of the cameras.
         """
@@ -444,7 +448,7 @@ class ClevrSkillsEnv(BaseEnv):
             ),
         ]
 
-    def _setup_cameras(self):
+    def _setup_cameras(self) -> None:
         """
         Called by ManiSkill2 sapien BaseEnv. This function applies a hack to make ensure all robot links are visible
         by hiding / unhiding them.
@@ -458,7 +462,7 @@ class ClevrSkillsEnv(BaseEnv):
             link.hide_visual()
             link.unhide_visual()
 
-    def step_action(self, action):
+    def step_action(self, action: np.ndarray) -> None:
         """
         This was function was copied literally from ManiSkill2 sapien_env.py in
         order to add the call to self._before_simulation_step()
@@ -481,13 +485,13 @@ class ClevrSkillsEnv(BaseEnv):
             self._scene.step()
             self._after_simulation_step()
 
-    def _before_simulation_step(self):
+    def _before_simulation_step(self) -> None:
         """
         Allows custom code to run before each simulation step.
         """
         pass
 
-    def _after_simulation_step(self):
+    def _after_simulation_step(self) -> None:
         """
         Keeps track of contact events during simulation.
         Contacts are used to evaluate predicates.
@@ -495,7 +499,7 @@ class ClevrSkillsEnv(BaseEnv):
         self._contact_during_last_sim_step = copy_contacts(self._scene.get_contacts())
         self._contact_during_control_step += self._contact_during_last_sim_step
 
-    def _before_control_step(self):
+    def _before_control_step(self) -> None:
         """
         Called before every control step, used to keep track of contact between objects.
         :return:
@@ -503,7 +507,7 @@ class ClevrSkillsEnv(BaseEnv):
         super()._before_control_step()
         self.reset_contact()
 
-    def _register_render_cameras(self):
+    def _register_render_cameras(self) -> None:
         """
         Called by ManiSkill2 sapien BaseEnv to get the render camera config.
         :return:
@@ -511,7 +515,7 @@ class ClevrSkillsEnv(BaseEnv):
         pose = look_at([1.0, 1.0, 0.8], [0.0, 0.0, 0.5])
         return CameraConfig("render_camera", pose.p, pose.q, 512, 512, 1, 0.01, 10)
 
-    def _setup_viewer(self):
+    def _setup_viewer(self) -> None:
         """
         Sets up the Sapien Viewer.
         """
@@ -519,7 +523,7 @@ class ClevrSkillsEnv(BaseEnv):
         self._viewer.set_camera_xyz(0.8, 0, 1.0)
         self._viewer.set_camera_rpy(0, -0.5, 3.14)
 
-    def _get_obs_agent(self):
+    def _get_obs_agent(self) -> OrderedDict:
         """
         :return: Agent observations, which are merged into the environment step observations.
         """
@@ -541,14 +545,14 @@ class ClevrSkillsEnv(BaseEnv):
 
         return obs
 
-    def _initialize_task(self):
+    def _initialize_task(self) -> None:
         """
         Calls the task to initialize itself.
         :return: None
         """
         self.task.initialize_task()
 
-    def check_robot_static(self, thresh=0.2):
+    def check_robot_static(self, thresh: float = 0.2) -> bool:
         """
         :param thresh: joint velocity threshold (radians/second) for determining if the robot is static.
         :return: True if the agent is not moving
@@ -557,7 +561,7 @@ class ClevrSkillsEnv(BaseEnv):
         qvel = self.agent.robot.get_qvel()[:-2]
         return np.max(np.abs(qvel)) <= thresh
 
-    def evaluate(self, **kwargs):
+    def evaluate(self, **kwargs) -> Dict[str, Any]:
         """
         :param kwargs: ignored
         :return: A dictionary with detailed info on the task.
@@ -568,7 +572,7 @@ class ClevrSkillsEnv(BaseEnv):
         task_eval["task"] = self.task.get_textual_description()
         return task_eval
 
-    def compute_dense_reward(self, info, **kwargs):
+    def compute_dense_reward(self, info: Dict[str, Any], **kwargs) -> float:
         """
         :param info: ignored
         :param kwargs:ignored
@@ -579,22 +583,24 @@ class ClevrSkillsEnv(BaseEnv):
     def _get_obs_extra(self) -> OrderedDict:
         """
         :return: a dictionary with additional observations, returned with the environment step.
-        The call is basically forwarded to self._get_obs_priviledged()
+        The call is basically forwarded to self._get_obs_privileged()
         """
         obs = OrderedDict()
         if self._obs_mode in ["state", "state_dict", "rgbd", "image"]:
-            obs.update(self._get_obs_priviledged())
+            obs.update(self._get_obs_privileged())
         return obs
 
-    def _get_obs_priviledged(self) -> OrderedDict:
+    def _get_obs_privileged(self) -> OrderedDict:
         """
-        Get priviledged (not meant for regular agent) observations such as actor visibility, bounding boxes, etc.
+        Get privileged (not meant for regular agent) observations such as actor visibility, bounding boxes, etc.
         :return: a dictionary with additional observations, returned with the environment step.
         """
         obs = OrderedDict()
         actors = self._get_task_actors()
         if len(actors) > 0:
-            obs["actors"] = np.hstack([get_actor_state(actor) for actor in actors])
+            obs["actors"] = {
+                f"{actor.name}_{actor.id}": get_actor_state(actor) for actor in actors
+            }  # [p, q, vel, ang_vel]
             obs["actor_is_visible"] = {}
             obs["actor_mesh_bbox"] = {}
             cameras = [self._cameras["base_camera"], self._cameras["hand_camera"]]
@@ -639,20 +645,27 @@ class ClevrSkillsEnv(BaseEnv):
         """
         return self.task.get_task_actors()
 
-    def _get_eps_info(self):
+    def _get_eps_info(self) -> Dict[str, Any]:
         """
         :return: Dictionary with information about the current episode (prompt, textures).
         """
         prompts = self.task.get_prompts()
         text_desc = self.task.get_textual_description()
         textures = self.task.get_textures()
+        init_state = self.task.get_init_state()
 
-        return {"prompts": prompts, "textual_description": text_desc, "textures": textures}
+        return {
+            "prompts": prompts,
+            "textual_description": text_desc,
+            "textures": textures,
+            "init_state": init_state,
+        }
 
-    def _get_prompt_assets(self):
+    def _get_prompt_assets(self) -> Dict[str, Any]:
+        """Return assets referenced by the current task prompts."""
         return self.task.get_prompt_assets()
 
-    def _get_obs_without_robot(self):
+    def _get_obs_without_robot(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         :return: visual observation of the scene, without the robot visible.
         This is used to generate key step images.
@@ -677,7 +690,7 @@ class ClevrSkillsEnv(BaseEnv):
 
         return render_img, base_img
 
-    def _get_obs_with_robot(self):
+    def _get_obs_with_robot(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         :return: visual observation of the scene, with the robot visible.
         This is used to generate key step images.
@@ -695,7 +708,7 @@ class ClevrSkillsEnv(BaseEnv):
 
         return render_img, base_img
 
-    def _get_customized_agent_config(self, default_cfg):
+    def _get_customized_agent_config(self, default_cfg: Any) -> Any:
         """
         The ManiSkill2 default_cfg object has some properties that intentionally resist modification . . .
         To customize it anyway, create  copy of the config, because the idea of configurations is that
@@ -787,7 +800,7 @@ class ClevrSkillsEnv(BaseEnv):
             result.remove(actor)
         return result
 
-    def reset_contact(self):
+    def reset_contact(self) -> None:
         """
         Must be called on every control step to reset the contact list.
         :return: None
@@ -843,12 +856,12 @@ class ClevrSkillsEnv(BaseEnv):
 
     def get_point_cloud_for_planning(
         self,
-        excluded_grasped_actors=True,
-        exclude_actors=None,
-        num_actor_points=10000,
-        num_floor_points=10000,
-        floor_size=2.0,
-    ):
+        excluded_grasped_actors: bool = True,
+        exclude_actors: Optional[List[sapien.Actor]] = None,
+        num_actor_points: int = 10000,
+        num_floor_points: int = 10000,
+        floor_size: float = 2.0,
+    ) -> np.ndarray:
         """
         :param excluded_grasped_actors: If True, the actors that are being grasped by the
         robot are excluded from the point cloud
@@ -869,13 +882,13 @@ class ClevrSkillsEnv(BaseEnv):
         point_cloud = point_cloud[np.linalg.norm(point_cloud, axis=1) < 10.0]  # keep it local
 
         if num_floor_points > 0:
-            fn = int(np.ceil(np.sqrt(num_floor_points) / 2))
-            fs = floor_size / (2 * fn)
-            floor_pcd = (
-                np.reshape(np.transpose(np.mgrid[-fn:fn, -fn:fn, 0:0.1], (1, 2, 3, 0)), (-1, 3))
-                * np.array([fs, fs, 1.0])
-                + self.agent.robot.pose.p
-            )
+            grid_size = int(np.ceil(np.sqrt(num_floor_points)))
+            offsets = np.linspace(-floor_size / 2, floor_size / 2, grid_size)
+            xx, yy = np.meshgrid(offsets, offsets)
+            floor_pcd = np.column_stack(
+                [xx.ravel(), yy.ravel(), np.full(xx.size, self._ground_altitude)]
+            )[:num_floor_points]
+            floor_pcd[:, :2] += self.agent.robot.pose.p[:2]
             floor_pcd = floor_pcd[
                 np.linalg.norm(floor_pcd - self.agent.robot.pose.p, axis=1) > 0.08
             ]
@@ -895,5 +908,10 @@ class ClevrSkillsEnv(BaseEnv):
 
         return point_cloud
 
-    def compute_normalized_dense_reward(self, *args, **kwargs):
+    def compute_normalized_dense_reward(self, *args, **kwargs) -> float:
+        """Compute a normalized dense reward for the current task.
+
+        Subclasses should override this method when they support normalized
+        reward reporting.
+        """
         raise NotImplementedError

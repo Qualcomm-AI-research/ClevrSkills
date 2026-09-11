@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import copy
 from typing import Dict, Tuple
@@ -113,7 +113,12 @@ class TouchSolver(AbstractTouchSolver):
         ee_pose = self._agent.ee_link.pose
 
         p = unit((self.actor.pose.p - ee_pose.p)[0:2])  # push direction
-        d = min(0.02, distance_to_actor + 0.001)
+        if self.push or self.topple:
+            d = min(0.02, distance_to_actor + 0.001)
+        else:
+            d = delta_p = list((self.actor.pose.p - ee_pose.p)[0:2]) + [
+                min(max_z - ee_pose.p[2], -0.001)
+            ]
 
         moved, toppled = self.get_goal_info()
 
@@ -131,13 +136,84 @@ class TouchSolver(AbstractTouchSolver):
             if touching:
                 self._done = True
                 d = 0.0
-        target_pos = np.array(
-            [ee_pose.p[0] + d * p[0], ee_pose.p[1] + d * p[1], target_ee_z],
-            dtype=np.float32,
-        )
+        if self.push or self.topple:
+            target_pos = np.array(
+                [ee_pose.p[0] + d * p[0], ee_pose.p[1] + d * p[1], target_ee_z],
+                dtype=np.float32,
+            )
+        else:
+            target_pos = np.array(ee_pose.p + np.array(delta_p))
         target_pose = sapien.Pose(target_pos, ee_pose.q)
         action, _ = ee_pose_to_ee_delta_action(self._agent, target_pose, gripper=self.gripper_off)
         return self.return_action(action)
+
+
+class GentleTouchSolver(AbstractTouchSolver):
+    def __init__(self, env: ClevrSkillsEnv, actor: sapien.Actor, push: bool = False, topple=False):
+        super().__init__(env, actor, push=push, topple=topple)
+
+    def get_current_action(self) -> Dict[str, str]:
+        mid_level_act = low_level_act = (
+            f"{self.get_verb(cap=True)} {get_actor_description(self.actor)}"
+        )
+        if self._sub_solver is not None:
+            low_level_act = (
+                f"Moving to a good place to {self.get_verb(cap=False)} "
+                f"{get_actor_description(self.actor)}"
+            )
+
+        return {"mid_act_label": mid_level_act, "low_act_label": low_level_act}
+
+    def step(self, obs):
+        # determine at what height to push
+        bounds = self._actor_distance.get_bounds(self.actor)
+        min_z, max_z = bounds[:, 2]
+        target_ee_z = max_z + 0.03
+        if self.topple:
+            target_ee_z = max_z - 0.015
+
+        if self._sub_solver and self._sub_solver.is_done():
+            if isinstance(self._sub_solver, TouchSolver):
+                self._done = True
+            self._sub_solver = None
+
+        if self._sub_solver:
+            return self._sub_solver.step(obs)
+
+        distance_to_actor = self._actor_distance.distance(self.actor, self._agent.ee_links)
+        ee_pose = self._agent.ee_link.pose
+        if self._done:
+            # Task is done. If the caller persists to call this solver:
+            # Move to a neutral pose, 5cm up, 5cm back
+            target_ee_z += 0.05
+            d = 0.05 * unit((self.actor.pose.p - self._agent.robot.pose.p)[0:2])
+            self._sub_solver = Move3dSolver(
+                self._env,
+                sapien.Pose([d[0], d[1], target_ee_z]).transform(ee_pose),
+                match_ori=True,
+                vacuum=False,
+                target_pose_name=f"neutral pose",
+            )
+        elif np.linalg.norm(self.actor.pose.p[:2] - ee_pose.p[:2]) <= 0.01:
+            self._sub_solver = TouchSolver(self._env, self.actor, self.push, self.topple)
+        else:
+            # get pose slightly above the actor
+            bounds = self._actor_distance.get_bounds(self.actor)
+            ee_target_pose_for_touch = sapien.Pose(
+                [self.actor.pose.p[0], self.actor.pose.p[1], bounds[1, 2] + 0.03], ee_pose.q
+            )
+            self._sub_solver = Move3dSolver(
+                self._env,
+                ee_target_pose_for_touch,
+                match_ori=True,
+                vacuum=False,
+                extend_bounds=0.0,
+                target_pose_name=(
+                    f"a good place to {self.get_verb()} " f"{get_actor_description(self.actor)}"
+                ),
+            )
+
+        return self._sub_solver.step(obs)
 
 
 class Move3dTouchSolver(AbstractTouchSolver):
@@ -158,7 +234,7 @@ class Move3dTouchSolver(AbstractTouchSolver):
         mid_level_act = low_level_act = (
             f"{self.get_verb(cap=True)} {get_actor_description(self.actor)}"
         )
-        if not self._sub_solver is None:
+        if self._sub_solver is not None:
             low_level_act = (
                 f"Moving to a good place to {self.get_verb(cap=False)} "
                 f"{get_actor_description(self.actor)}"

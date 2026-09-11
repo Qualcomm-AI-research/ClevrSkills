@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from typing import Dict, Optional
 
@@ -163,12 +163,12 @@ class PickMove3dPlaceSolver(AbstractSolver):
         :return: The language label of the current action being taken.
         A dict with keys "mid_act_label" and "low_act_label".
         """
-        if not self.target_actor is None:
+        if self.target_actor is not None:
             mid_level_act = (
                 f"Place {get_actor_description(self.actor)} on "
                 f"{get_actor_description(self.target_actor)} without hitting anything else"
             )
-        elif not self.target_pose is None:
+        elif self.target_pose is not None and not self._lift_only:
             mid_level_act = (
                 f"Place {get_actor_description(self.actor)} on "
                 f"{{pos:{self.target_pose.p}}} without hitting anything else"

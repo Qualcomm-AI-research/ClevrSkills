@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 """
 Some functions to make it easy to use mplib planner
@@ -328,7 +328,7 @@ def get_collisions(planner: mplib.Planner, qpos_path, detailed=False, point_clou
     :param point_cloud_radius:
     :return: returns array of bool, or list of collisions, for each qpos
     """
-    if not point_cloud_radius is None:
+    if point_cloud_radius is not None:
         set_planner_point_cloud(planner, point_cloud=None, point_radius=point_cloud_radius)
 
     result = [planner.check_for_env_collision(state=qpos) for qpos in qpos_path]
@@ -461,7 +461,10 @@ def solve_ik(
             # Last resort: Solve IK with many random starting positions
             # When n_init_qpos > 1, random initial positions will be sampled
             ik_result = planner.IK(
-                vectorize_pose(target_pose), current_robot_qpos, mask=joint_mask, n_init_qpos=100
+                mplib.Pose(target_pose.p, target_pose.q),
+                current_robot_qpos,
+                mask=joint_mask,
+                n_init_qpos=100,
             )
             if ik_result[0] != "Success":
                 raise RuntimeError(
@@ -862,7 +865,6 @@ def get_cartesian_robot_mplib_planner_with_attached_actors(
     )
 
     if agent:
-        # planner.set_base_pose(agent.robot.pose)
         planner.set_base_pose(mplib.Pose(agent.robot.pose.p, agent.robot.pose.q))
 
     # Be careful: when the planner is used for pushing,
@@ -1053,7 +1055,7 @@ def generate_cartesian_robot_urdf(
         for element in [origin_xml, parent_xml, child_xml]:
             joint_xml.appendChild(element)
 
-        if not axis_idx is None:
+        if axis_idx is not None:
             axis_xml = robot_xml.createElement("axis")
             axis_xml.setAttribute(
                 "xyz", f"{int(axis_idx==0)} {int(axis_idx==1)} {int(axis_idx==2)}"

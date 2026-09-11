@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from abc import ABC, abstractmethod
 from typing import Dict
@@ -73,6 +73,8 @@ class AbstractSolver(ABC):
         """
         action = np.copy(self.nop_action)
         action[-1] = gripper
+        self.action_state["hold_action"] = True
+
         return self.return_action(action)
 
     def return_delta_pose_action(
@@ -146,5 +148,6 @@ class AbstractSolver(ABC):
         Should be called at the start of each step.
         """
         self.action_state["action_emitted"] = False
+        self.action_state["hold_action"] = False
         if self._sub_solver:
             self._sub_solver._reset_action_state()

@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 # This script applies a patch to a checkout of the official UFACTORY xArm
 # GitHub repo in order to obtain the URDF that is used in ClevrSkills.

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # set the $PROJECT_ROOT environment variable to the location of ClevrSkillsEnvSuite and
 # execute this script from the root directory of the repo.
 

@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import sapien.core as sapien
@@ -131,12 +132,12 @@ class HitPredicate(EnvPredicate):
         """
         :return: dense reward (float in range [0, 12]).
         """
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 12.0
-        if eval["throw_actor_grasped"]:
-            return 4.0 + 4.0 * np.exp(-eval["trajectory_min_distance"] * 10)
+        if eval_result["throw_actor_grasped"]:
+            return 4.0 + 4.0 * np.exp(-eval_result["trajectory_min_distance"] * 10)
         return self._pick_predicate.compute_dense_reward()
 
     def predict_trajectory_min_distance(self, interval=3.0):

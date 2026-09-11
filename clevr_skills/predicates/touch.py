@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import sapien.core as sapien
@@ -105,22 +106,22 @@ class TouchPredicate(EnvPredicate):
         """
         :return: dense reward (float in range [0, 3]).
         """
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 3.0
 
         distance_to_actor = self._actor_distance.distance(self.actor, self._env.agent.ee_links)
         reward = np.exp(-5.0 * distance_to_actor)
 
         if self.topple:
-            reward += min(1.0, eval["topple_angle"] / self._topple_threshold)
+            reward += min(1.0, eval_result["topple_angle"] / self._topple_threshold)
         if self.push:
-            reward += 1.0 - min(1.0, eval["topple_angle"] / self._topple_threshold)
+            reward += 1.0 - min(1.0, eval_result["topple_angle"] / self._topple_threshold)
         if self.topple or self.push:
-            reward += min(1.0, eval["distance_moved"] / self._displacement_threshold)
+            reward += min(1.0, eval_result["distance_moved"] / self._displacement_threshold)
         else:
-            reward += 0.5 if eval["actor_at_pos"] else 0.0
-            reward += 0.5 if eval["actor_at_pose"] else 0.0
+            reward += 0.5 if eval_result["actor_at_pos"] else 0.0
+            reward += 0.5 if eval_result["actor_at_pose"] else 0.0
 
         return reward

@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import sapien.core as sapien
@@ -91,14 +92,14 @@ class PickPredicate(EnvPredicate):
         :return: dense reward (float in range [0, 4]).
         """
 
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 4.0
 
-        if eval["actor_grasped"]:
+        if eval_result["actor_grasped"]:
             # reward getting away from other actors
-            return 2.0 + np.clip(eval["clearance"] / self._clear_distance, 0, 1)
+            return 2.0 + np.clip(eval_result["clearance"] / self._clear_distance, 0, 1)
 
         # reach for actor; max 2 reward
         # reward EE for getting close to the actor

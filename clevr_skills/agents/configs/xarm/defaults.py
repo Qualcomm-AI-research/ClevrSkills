@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 # Code adapted from https://github.com/haosulab/ManiSkill
 # Copyright (c) 2024, ManiSkill Contributors, licensed under the Apache License, Version 2.0

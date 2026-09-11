@@ -1,8 +1,10 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import os
+import pkgutil
 from abc import ABC, abstractmethod
+from importlib import import_module
 from typing import Dict, List, Optional, Tuple, Union
 
 import cv2
@@ -11,10 +13,7 @@ import sapien.core as sapien
 from mani_skill2.utils.trimesh_utils import get_actor_mesh
 
 from clevr_skills.predicates.predicate import Predicate
-from clevr_skills.utils.actor_placement import (  # place_actor_randomly,
-    place_actor_out_of_reach_v2,
-    place_actor_randomly_v2,
-)
+from clevr_skills.utils.actor_placement import place_actor_out_of_reach_v2, place_actor_randomly_v2
 from clevr_skills.utils.logger import log
 from clevr_skills.utils.models import ModelAndTextureFactory
 from clevr_skills.utils.permute import get_permutation_first_indices, get_permutation_indices
@@ -73,6 +72,7 @@ class Task(ABC):
 
         self.prompts = []
         self.prompt_assets = {"objects": {}, "textures": {}}
+        self.init_state = {}
 
     def _get_variant(
         self,
@@ -290,6 +290,14 @@ class Task(ABC):
         """
         raise NotImplementedError
 
+    def get_init_state(self) -> Dict[str, any]:
+        """
+        Returns the initial state of the task including objects,
+        and their poses.
+        :return:
+        """
+        return self.init_state
+
     def get_textual_description(self) -> str:
         """
         Returns the goal of the task in natural language.
@@ -357,6 +365,21 @@ class Task(ABC):
 
 
 REGISTERED_TASKS = {}
+_TASK_MODULES_IMPORTED = False
+
+
+def _import_task_modules() -> None:
+    """Import task modules so their ``@register_task`` decorators run."""
+    global _TASK_MODULES_IMPORTED
+    if _TASK_MODULES_IMPORTED:
+        return
+
+    package_dir = os.path.dirname(__file__)
+    for module_info in pkgutil.iter_modules([package_dir]):
+        if module_info.name.startswith("_") or module_info.name == "task":
+            continue
+        import_module(f"clevr_skills.tasks.{module_info.name}")
+    _TASK_MODULES_IMPORTED = True
 
 
 def register_task(name: str, **kwargs):
@@ -381,6 +404,8 @@ def get_task_class(task_name: str):
     :return: Class of a registered task.
     Raises a runtime error if the task_name is not found in the registry
     """
+    _import_task_modules()
+
     if task_name in REGISTERED_TASKS:
         return REGISTERED_TASKS[task_name]
     task_name = task_name.lower()

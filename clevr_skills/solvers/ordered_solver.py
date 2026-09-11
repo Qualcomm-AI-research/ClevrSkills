@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from clevr_skills.clevr_skills_env import ClevrSkillsEnv
 from clevr_skills.predicates.order import Order

@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import argparse
 import json
@@ -132,7 +132,7 @@ class PromptVisualizer:
         if atype in ["pos", "ks"]:
             return asset_raw
         if atype == "obj":
-            return " the " + "_".join(aname.split("_")[:1])
+            return " the " + "_".join(aname.split("_")[:-1])
         if atype == "tex":
             return info_json["textures"][aname][0]
         raise RuntimeError(f"Asset type '{atype}' not known")
@@ -157,10 +157,10 @@ class PromptVisualizer:
                 if self.background_color is None:
                     asset_img = asset_img[:, :, 0:3]
                 else:  # alpha channel -> background color
-                    asset_img = asset_img.astype(np.int)
+                    asset_img = asset_img.astype(int)
                     alpha = asset_img[:, :, 3:4]
                     asset_img = asset_img[:, :, 0:3]
-                    background_image = np.zeros(asset_img.shape, dtype=np.int)
+                    background_image = np.zeros(asset_img.shape, dtype=int)
                     background_image[:, :, 0:3] = self.background_color
                     asset_img = asset_img[:, :, 0:3] * alpha + background_image * (255 - alpha)
                     asset_img = np.round(asset_img / 255).astype(np.uint8)
@@ -195,8 +195,11 @@ class PromptVisualizer:
         caller to compose the final image)
         """
 
-        with open(os.path.join(data_path, "info.json"), "r", encoding="utf8") as fp:
-            info_json = json.load(fp)
+        if os.path.exists(os.path.join(data_path, "info.json")):
+            with open(os.path.join(data_path, "info.json"), "r", encoding="utf8") as fp:
+                info_json = json.load(fp)
+        else:
+            info_json = dict()
 
         text_splits = re.split(r"\{(.*?)\}", prompt)[0::2]
         asset_names = re.findall(r"\{(.*?)\}", prompt)

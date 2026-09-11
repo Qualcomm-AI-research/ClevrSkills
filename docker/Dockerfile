@@ -1,7 +1,7 @@
 FROM nvidia/cuda:12.0.0-base-ubuntu22.04
 
 ENV NVIDIA_DRIVER_CAPABILITIES=all
-ENV PYTHONPATH="${PYTHONPATH}:/clevrskills"
+ENV PYTHONPATH=/clevrskills
 
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \

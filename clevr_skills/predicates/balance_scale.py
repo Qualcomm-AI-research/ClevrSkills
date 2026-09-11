@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List, Tuple
 
@@ -104,12 +105,14 @@ class BalanceScale(EnvPredicate):
         :return: dense reward (float in range [0, 6 * num_actors]).
         """
         REWARD_PER_CORRECTLY_PLACED = 6.0  # or whatever reward per object
-        eval = self.evaluate(return_by_name=False)
-        if eval["success"]:
+        eval_result = self.evaluate(return_by_name=False)
+        if eval_result["success"]:
             return len(self.objects) * REWARD_PER_CORRECTLY_PLACED
 
-        incorrectly_placed_actors = eval["incorrect_plate1"] + eval["incorrect_plate2"]
-        correctly_placed_actor = eval["correct_plate1"] + eval["correct_plate2"]
+        incorrectly_placed_actors = (
+            eval_result["incorrect_plate1"] + eval_result["incorrect_plate2"]
+        )
+        correctly_placed_actor = eval_result["correct_plate1"] + eval_result["correct_plate2"]
 
         # negative reward for incorrectly placed objects
         reward = (
@@ -161,7 +164,7 @@ class BalanceScale(EnvPredicate):
             if len(incorrectly_placed_actors):
                 reward_distance_actors += incorrectly_placed_actors
             else:
-                reward_distance_actors += eval["unplaced"]
+                reward_distance_actors += eval_result["unplaced"]
 
             # get nearest reward_distance_actors
             if len(reward_distance_actors) > 0:

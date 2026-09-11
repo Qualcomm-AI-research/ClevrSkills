@@ -1,6 +1,11 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 from typing import Dict
 
 import gymnasium as gym
+
+from clevr_skills import clevr_skills_env  # noqa: F401
 
 TASK_PROMPT_IDX = {
     "match_pose": [0],
@@ -38,6 +43,13 @@ TASK_PROMPT_IDX = {
     "swap_push": [0],
     "swap_rotate": [0],
     "throw_sort": [0],
+    # memory
+    "touch_pick": [0],
+    "touch_pick_smol": [0],
+    "placenextto": [0],
+    "place_next_restore_simple10k": [0],
+    "place_next_restore_simple1k": [0],
+    "rotate_restore_simple_10k": [0],
 }
 
 TASK_NAME_MAPPING = {
@@ -76,6 +88,13 @@ TASK_NAME_MAPPING = {
     "swap_push": "Swap",
     "swap_rotate": "SwapRotate",
     "throw_sort": "ThrowAndSort",
+    # memory
+    "touch_pick": "TouchPick",
+    "touch_pick_smol": "TouchPick",
+    "placenextto": "PlaceNextTo",
+    "place_next_restore_simple10k": "PlaceNextTo",
+    "place_next_restore_simple1k": "PlaceNextTo",
+    "rotate_restore_simple_10k": "Rotate",
 }
 
 L0_tasks = {
@@ -136,7 +155,8 @@ def get_clevrskills_env(tasks_args: Dict, split="train") -> Dict:
         task_name = TASK_NAME_MAPPING.get(task, task)
 
         task_params = tasks_args[task]
-        task_params.update({"split": split})
+        if "split" not in task_params.keys():
+            task_params.update({"split": split})
 
         env = gym.make(
             "ClevrSkills-v0",

@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import os
 from typing import List, Optional, Tuple
@@ -95,9 +96,7 @@ def create_cylinder_mesh(
     bottom_ring = np.array([0.5 * s, 0.5 * c, -0.5 * o]).T
 
     if odd_scale != 1.0:
-        mask = np.linspace(
-            start=0, stop=num_vertices, num=num_vertices, endpoint=False, dtype=np.int
-        )
+        mask = np.linspace(start=0, stop=num_vertices, num=num_vertices, endpoint=False, dtype=int)
         mask = mask % 2 == 1
         top_ring[mask, 0:2] *= odd_scale
         bottom_ring[mask, 0:2] *= odd_scale

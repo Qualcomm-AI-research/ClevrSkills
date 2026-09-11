@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import sapien.core as sapien
@@ -32,18 +33,18 @@ class AtPose(AtPosition):
         Evaluate if the predicate is successful or not.
         :return: A dictionary containing at least "success", but also additional information.
         """
-        eval = super().evaluate()
+        eval_result = super().evaluate()
 
         # Compute whether actor is at pose
         _, angle = quat2smallest_axangle(qmult(self.actor.pose.q, qinverse(self.pose.q)))
         angle_diff = abs(angle) / np.pi
 
-        actor_at_pose = (angle_diff < 0.1) and eval["actor_at_pos"]
+        actor_at_pose = (angle_diff < 0.1) and eval_result["actor_at_pos"]
 
-        success = eval["success"] and actor_at_pose
-        eval["success"] = success
-        eval["actor_at_pose"] = actor_at_pose
-        return eval
+        success = eval_result["success"] and actor_at_pose
+        eval_result["success"] = success
+        eval_result["actor_at_pose"] = actor_at_pose
+        return eval_result
 
 
 class AtPoseRotated(AtPose):

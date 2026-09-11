@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 # This script computes a patch relative to the official UFACTORY xArm
 # GitHub repo in order to obtain the URDF that is used in ClevrSkills.
@@ -225,7 +226,7 @@ def create_urdf_patch(xarm_repo_path: str, clevrskills_urdf_path: str, output_pa
     return urdf_patch_path
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--xarm-repo-path",

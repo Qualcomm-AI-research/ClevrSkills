@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # Code adapted from https://github.com/haosulab/ManiSkill
 # Copyright (c) 2024, ManiSkill Contributors, licensed under the Apache License, Version 2.0
@@ -53,6 +53,7 @@ class RecordEnv(RecordEpisode):
         clean_on_close=True,
         save_depth=False,
         save_segmentation=False,
+        scratchpad_on_video=False,
     ):
         """
         :param env: The env-to-be-wrapped. Also called inner environment in the comments below.
@@ -83,6 +84,13 @@ class RecordEnv(RecordEpisode):
         self.save_depth = save_depth
         self.save_segmentation = save_segmentation
         self.extra_info = {}
+
+        self.scratchpad_on_video = scratchpad_on_video
+
+        # removing the .h5 file as not needed and creates problems with pre-emption
+        self._h5_file.close()
+        if os.path.exists(os.path.join(output_dir, f"{trajectory_name}.h5")):
+            os.remove(os.path.join(output_dir, f"{trajectory_name}.h5"))
 
     def step(self, action, extra_info={}):
         """
@@ -127,6 +135,21 @@ class RecordEnv(RecordEpisode):
                     0.4,
                     (255, 0, 0),
                 )
+        return images
+
+    def _write_scratchpad(self, images):
+        for idx, img in enumerate(images):
+            if idx in self.extra_info and "scratchpad" in self.extra_info[idx]:
+                parts = self.extra_info[idx]["scratchpad"].split("\n")
+                for pidx, pt in enumerate(parts):
+                    cv2.putText(
+                        img,
+                        pt,
+                        (5, 25 + pidx * 10),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.4,
+                        (255, 0, 0),
+                    )
         return images
 
     def _save_action_labels(self, path):
@@ -238,12 +261,14 @@ class RecordEnv(RecordEpisode):
 
         if len(self._episode_data) == 1:
             action_space = self.env.action_space
-            assert isinstance(action_space, spaces.Box), action_space
+            if not isinstance(action_space, spaces.Box):
+                raise TypeError(action_space)
             actions = np.empty(
                 shape=(0,) + action_space.shape,
                 dtype=action_space.dtype,
             )
             dones = np.empty(shape=(0,), dtype=bool)
+            rewards = np.empty(shape=(0,), dtype=bool)
         else:
             # Record transitions (ignore the first padded values during reset)
             actions = np.stack([x["a"] for x in self._episode_data[1:]])
@@ -271,3 +296,13 @@ class RecordEnv(RecordEpisode):
 
         if verbose:
             log(f"Record the {self._episode_id}-th episode")
+
+    def close(self) -> None:
+        if self.save_trajectory:
+            # Handle the last episode only when `save_on_reset=True`
+            if self.save_on_reset:
+                self.flush_trajectory(ignore_empty_transition=True)
+        if self.save_video:
+            if self.save_on_reset:
+                self.flush_video(ignore_empty_transition=True)
+        return super(RecordEpisode, self).close()

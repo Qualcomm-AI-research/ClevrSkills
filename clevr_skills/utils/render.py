@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -367,11 +368,11 @@ def scale_and_crop_image(
         lrx = ulx + useable_shape[0]
         uly = (image_height - useable_shape[1]) // 2
         lry = uly + useable_shape[1]
-        transform_crop = np.array([[1, 0, -ulx], [0, 1, -uly], [0, 0, 1]], dtype=np.float)
+        transform_crop = np.array([[1, 0, -ulx], [0, 1, -uly], [0, 0, 1]], dtype=float)
         image = image[uly:lry, ulx:lrx, :]
         transform_scale = np.array(
             [[size[0] / image.shape[1], 0, 0], [0, size[1] / image.shape[0], 0], [0, 0, 1]],
-            dtype=np.float,
+            dtype=float,
         )
         transform = np.matmul(transform_scale, transform_crop)
         image = cv2.resize(image, size, interpolation=cv2.INTER_LINEAR)
@@ -383,7 +384,7 @@ def scale_and_crop_image(
                 size = [int(round(image_width * size[1] / image_height)), size[1]]
             transform_scale = np.array(
                 [[size[0] / image.shape[1], 0, 0], [0, size[1] / image.shape[0], 0], [0, 0, 1]],
-                dtype=np.float,
+                dtype=float,
             )
             image = cv2.resize(image, size, interpolation=cv2.INTER_LINEAR)
         else:
@@ -395,7 +396,7 @@ def scale_and_crop_image(
         uly = (size[1] - image.shape[0]) // 2
         lry = uly + image.shape[0]
         padded_image[uly:lry, ulx:lrx, :] = image
-        transform_paste = np.array([[1, 0, ulx], [0, 1, uly], [0, 0, 1]], dtype=np.float)
+        transform_paste = np.array([[1, 0, ulx], [0, 1, uly], [0, 0, 1]], dtype=float)
         transform = np.matmul(transform_paste, transform_scale)
         image = padded_image
     return (image, transform) if return_transform else image

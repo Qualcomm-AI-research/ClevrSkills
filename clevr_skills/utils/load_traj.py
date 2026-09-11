@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import argparse
 import bz2
@@ -97,6 +97,19 @@ class Traj:
             with open(os.path.join(self.path, "info.json"), "r", encoding="utf8") as file:
                 self.info = json.load(file)
         return self.info
+
+    def get_scratchpad(self, name="scratchpad") -> Dict:
+        """
+        :return: A list of tuples with scratchpad info if it exists
+        """
+        if not hasattr(self, "scratchpad"):
+            if os.path.exists(os.path.join(self.path, f"{name}.json")):
+                with open(os.path.join(self.path, f"{name}.json"), "r") as file:
+                    self.scratchpad = json.load(file)
+            else:
+                log("Warning: scratchpad.json does not exist for this trajectory")
+                self.scratchpad = {}
+        return self.scratchpad
 
     def get_ep_info(self) -> Dict:
         """
@@ -274,7 +287,8 @@ class Traj:
         :param name: Proprioception.BASE, Traj.Proprioception.QPOS or Traj.Proprioception.QVEL]
         :return: numpy array of shape [num_steps, length of state]
         """
-        assert isinstance(name, Traj.Proprioception)
+        if not isinstance(name, Traj.Proprioception):
+            raise TypeError(type(name))
         if not hasattr(self, "proprioception"):
             self.proprioception = {}
             for p in Traj.Proprioception:
@@ -342,6 +356,18 @@ class Traj:
         """
         return self.get_agent_state(Traj.Proprioception.VACUUM_READY)
 
+    def get_agent_has_grasped(self):
+        """
+        :return: The boolean array with True for gripper has grasped any object.
+        """
+        if not hasattr(self, "object_grasped"):
+            file_path = os.path.join(self.path, "extra/object_grasped.npy")
+            if os.path.exists(file_path):
+                self.object_grasped = np.load(file_path)
+            else:
+                self.object_grasped = None
+        return self.object_grasped
+
     def get_actor_name_id(self):
         # Because the order of actors is not explicitly recorded, we need to assume
         # that they are ordered by ID
@@ -361,18 +387,37 @@ class Traj:
         :return: The position, orientation, velocity and angular velocity of each actor.
         """
         if not hasattr(self, "actor_state"):
-            self.actor_state = np.load(os.path.join(self.path, "extra/actors.npy"))
+            if os.path.exists(os.path.join(self.path, "extra/actors.npy")):
+                self.actor_state = np.load(os.path.join(self.path, "extra/actors.npy"))
+            else:
+                self.actor_state = {
+                    f"{actor_name}_{actor_id}": np.load(
+                        os.path.join(self.path, f"extra/actors/{actor_name}_{actor_id}.npy")
+                    )
+                    for actor_name, actor_id in self.get_actor_name_id()
+                }
         if return_dict:
             result = {}
             for idx, (actor_name, actor_id) in enumerate(self.get_actor_name_id()):
-                s = self.actor_state[:, idx * 13 : (idx + 1) * 13]
-                result[(actor_name, actor_id)] = {
+                if isinstance(self.actor_state, np.ndarray):
+                    s = self.actor_state[:, idx * 13 : (idx + 1) * 13]
+                else:
+                    s = self.actor_state[f"{actor_name}_{actor_id}"]
+                state = {
                     "pos": s[:, 0:3],
                     "ori": s[:, 3:7],
                     "vel": s[:, 7:10],
                     "ang_vel": s[:, 10:13],
                 }
+                result[(actor_name, actor_id)] = state
+                result[f"{actor_name}_{actor_id}"] = state
             return result
+        if isinstance(self.actor_state, dict):
+            actor_states = [
+                self.actor_state[f"{actor_name}_{actor_id}"]
+                for actor_name, actor_id in self.get_actor_name_id()
+            ]
+            return np.concatenate(actor_states, axis=1)
         return self.actor_state
 
     def get_scene_image(self, camera_name: Camera) -> np.ndarray:
@@ -421,7 +466,7 @@ class Traj:
         obj_img_path = os.path.join(self.path, "objects")
         for filename in os.listdir(obj_img_path):
             image = cv2.imread(os.path.join(obj_img_path, filename))
-            if not image is None:
+            if image is not None:
                 actor_name, actor_id = split_actor_name_id(os.path.splitext(filename)[0])
                 result[(actor_name, actor_id)] = image
         return result

@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
 import sapien.core as sapien
@@ -33,8 +33,9 @@ from clevr_skills.solvers.move3d_solver import Move3dSolver
 from clevr_skills.solvers.pick_move3d_place_solver import PickMove3dPlaceSolver
 from clevr_skills.solvers.pick_move3d_throw_solver import PickMove3dThrowSolver
 from clevr_skills.solvers.push_solver import PushSolver
+from clevr_skills.solvers.rotate_solver import RotateSolver
 from clevr_skills.solvers.topple_structure import ToppleStructure
-from clevr_skills.solvers.touch_solver import Move3dTouchSolver
+from clevr_skills.solvers.touch_solver import GentleTouchSolver
 from clevr_skills.solvers.trace_solver import TraceSolver
 from clevr_skills.tasks.place_next_to import filter_actor_positions
 from clevr_skills.utils.action_trace import at_get_actor
@@ -91,9 +92,11 @@ class Solver(AbstractSolver):
                 self.init_solver(self._current_predicate) if self._current_predicate else None
             )
 
-        if not self._sub_solver is None:
-            extra_info["act_label"] = self._sub_solver.get_current_action()
+        if self._sub_solver is not None:
             self._prev_action = action = self._sub_solver.step(obs)
+            extra_info["act_label"] = self._sub_solver.get_current_action()
+            if "hold_action" in self._sub_solver.action_state:
+                self.action_state["hold_action"] = self._sub_solver.action_state["hold_action"]
             self._warned_has_completed = False
             return action, extra_info
 
@@ -173,13 +176,13 @@ class Solver(AbstractSolver):
                 "target_pose_function": "rotate",
                 "angle": r.degree,
                 "restore": r.restore,
+                "clockwise": r.clockwise,
             }
-            solver = PickMove3dPlaceSolver(
+            solver = RotateSolver(
                 self._env,
                 r.actor,
                 target_pose=r.pose,
                 target_pose_name="designated pose",
-                match_ori=True,
                 action_state_extra=action_state_extra,
             )
         elif isinstance(predicate, AtPoseRotated):
@@ -238,7 +241,7 @@ class Solver(AbstractSolver):
             )
         elif isinstance(predicate, TouchPredicate):
             r: TouchPredicate = predicate
-            solver = Move3dTouchSolver(self._env, predicate.actor, predicate.push, predicate.topple)
+            solver = GentleTouchSolver(self._env, predicate.actor, predicate.push, predicate.topple)
         elif isinstance(predicate, EEAtPosition):
             r: EEAtPosition = predicate
             p = r.pose.p

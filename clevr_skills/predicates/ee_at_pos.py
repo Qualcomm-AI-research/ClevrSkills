@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 import numpy as np
@@ -42,9 +43,9 @@ class EEAtPosition(EnvPredicate):
         """
         :return: dense reward (float in range [0, 2]).
         """
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 2.0
 
         ee_pose = self._env.agent.ee_link.pose

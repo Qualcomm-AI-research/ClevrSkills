@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 """
 Script to convert ClevrSkills dataset to "LLaVa format" using 
@@ -548,7 +549,7 @@ class LlavaConverter:
         input_paths: List[str],
         output_path: str,
         emit_actor_pos: bool = False,
-        eval: bool = False,
+        eval_mode: bool = False,
         cheat: bool = False,
         save_verification_images: bool = False,
         split_object_json: bool = False,
@@ -558,7 +559,7 @@ class LlavaConverter:
         :param input_paths: Where to search for trajectories. Can be a list of multiple paths
         :param output_path: path to json file for output.
         :param emit_actor_pos: Whether to emit the 2D actor position with each actor
-        :param eval: In evaluation mode, the output format is different. This is for
+        :param eval_mode: In evaluation mode, the output format is different. This is for
         running the test-set.
         :param cheat: allow cheating, until some issues with some tasks are fixed.
         Specifically: The "Swap" predicate currently requires the solver to use a
@@ -568,7 +569,7 @@ class LlavaConverter:
         :param split_object_json: Split the output into separate json for robot control conversations and object-related conversations?
         """
         self.emit_actor_pos = emit_actor_pos
-        self.eval = eval
+        self.eval_mode = eval_mode
         self.cheat = cheat
         self.save_verification_images = save_verification_images
         self.is_split_object_json = split_object_json
@@ -830,7 +831,7 @@ class LlavaConverter:
         This flag is used to split the conversations into regular and object, later on.
         :return: json dictionary.
         """
-        if self.eval:
+        if self.eval_mode:
             text = conversation[0]["value"].replace("<image>\n", "")
             json_obj = {
                 "source": traj_path,
@@ -1177,7 +1178,7 @@ if __name__ == "__main__":
         args.input_path,
         args.output_path,
         emit_actor_pos=args.actor_pos2d,
-        eval=args.eval,
+        eval_mode=args.eval,
         save_verification_images=args.save_verification_images,
         split_object_json=args.split_object_json,
     )

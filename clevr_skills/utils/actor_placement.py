@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from copy import deepcopy
 from typing import List
@@ -74,6 +74,45 @@ def get_random_non_overlapping_poses_2d_with_actor_sizes(env, num_poses, workspa
         position = np.concatenate((position, [z]))
         angle = env._episode_rng.uniform(0.0, 2 * np.pi)
         poses.append(Pose(position, axangle2quat([0.0, 0.0, 1.0], angle)))
+    return poses
+
+
+def get_poses_for_swapping(env, workspace, actor_sizes):
+
+    poses = []
+    positions = [[-np.inf, -np.inf]] * 3  # 2 for actors and 1 buff
+    buff_pos = None
+
+    for p in range(2):
+        min_distance = np.linalg.norm(actor_sizes[p][0:2]) + 0.1  # 0.1 as an eps
+        MAX_ATTEMPTS = 10
+        for attempt in range(MAX_ATTEMPTS):
+            low_lim = workspace[0]
+            high_lim = workspace[1]
+            if buff_pos is None:
+                high_lim[1] -= min_distance
+            position = env._episode_rng.uniform(low=low_lim, high=high_lim)
+
+            if len(positions) == 0 or np.all(
+                np.linalg.norm(np.array(positions) - position, axis=1) >= min_distance
+            ):
+                break
+
+        if attempt == MAX_ATTEMPTS:
+            log("Warning: object could spawn at location intersecting with other object")
+
+        positions[p] = position
+        if buff_pos is None:
+            buff_pos = deepcopy(position)
+            buff_pos[1] -= min_distance
+            positions[2] = buff_pos
+
+    for idx, pos in enumerate(positions):
+        z = actor_sizes[idx][2] / 2  # half the actor height
+
+        pos = np.concatenate((pos, [z]))
+        angle = env._episode_rng.uniform(0.0, 2 * np.pi)
+        poses.append(Pose(pos, axangle2quat([0.0, 0.0, 1.0], angle)))
     return poses
 
 

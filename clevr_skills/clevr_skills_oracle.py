@@ -1,7 +1,8 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import argparse
+import ast
 import bz2
 import glob
 import json
@@ -11,7 +12,7 @@ import pickle
 import time
 import traceback
 from copy import deepcopy
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import gymnasium as gym
 import imageio
@@ -28,7 +29,7 @@ from clevr_skills.utils.visualize_prompt import PromptVisualizer
 MAX_STEPS = 1000
 
 
-def discretize_actions(actions, num_bins=256):
+def discretize_actions(actions: np.ndarray, num_bins: int = 256) -> np.ndarray:
     """
     When discretize_actions is set to true from command-line, discretizes the actions.
     Assumes that action values range from -1 to +1
@@ -45,24 +46,24 @@ def discretize_actions(actions, num_bins=256):
     return actions
 
 
-def save_keystep(eps_path, info, keysteps_idx):
+def save_keystep(eps_path: Optional[str], info: Dict[str, Any], keysteps_idx: int) -> None:
     """
     Save keysteps to file.
     :param eps_path: path to the episode directory
     :param info: episode info which holds the current keystep images
     :param keysteps_idx: current keystep index
-    :return:
+    :return: None.
     """
     rimg = info["render_img"]
     bimg = info["base_img"]
 
-    if not eps_path is None:
+    if eps_path is not None:
         os.makedirs(os.path.join(eps_path, "keysteps"), exist_ok=True)
         imageio.imwrite(os.path.join(eps_path, f"keysteps/{keysteps_idx}_rimg.jpg"), rimg)
         imageio.imwrite(os.path.join(eps_path, f"keysteps/{keysteps_idx}_bimg.jpg"), bimg)
 
 
-def get_action_trace(solver, check: bool = True):
+def get_action_trace(solver: Optional[Solver], check: bool = True) -> List[Dict[str, Any]]:
     """
     :param solver: The top-level solver
     :param check: Whether to perform a check that only a single solver in the hierarchy emitted the action action.
@@ -82,12 +83,12 @@ def get_action_trace(solver, check: bool = True):
     return trace
 
 
-def save_action_trace(episode_action_trace, eps_path):
+def save_action_trace(episode_action_trace: List[List[Dict[str, Any]]], eps_path: str) -> None:
     """
     Save action trace to file.
     :param episode_action_trace: action trace for entire episode.
     :param eps_path: path to episode directory.
-    :return: NNone
+    :return: None.
     """
     with bz2.BZ2File(os.path.join(eps_path, "action_trace.pickle.bz2"), "w") as file:
         pickle.dump(episode_action_trace, file)
@@ -109,9 +110,9 @@ def get_render_config(args: argparse.Namespace) -> Dict:
     return render_config
 
 
-def wrap_record_env(env, args: argparse.Namespace, proc_id: int, num_procs: int = 0):
+def wrap_record_env(env: gym.Env, args: argparse.Namespace, proc_id: int, num_procs: int = 0):
     """
-    Wraps ens in RecordEnv (or RecordPrettyEnv)
+    Wraps the environment in RecordEnv (or RecordPrettyEnv).
     :param env: The environment to be wrapped.
     :param args: Command-line arguments.
     :param proc_id: Process-id (when using multiple processes to generate trajectories in parallel).
@@ -150,7 +151,12 @@ def wrap_record_env(env, args: argparse.Namespace, proc_id: int, num_procs: int 
 
 
 def generate_episode(
-    args: argparse.Namespace, env, ue, episode_idx, num_procs, enable_viewer
+    args: argparse.Namespace,
+    env: gym.Env,
+    ue: gym.Env,
+    episode_idx: int,
+    num_procs: int,
+    enable_viewer: bool,
 ) -> bool:
     """
     Generates the data for a single episode.
@@ -169,10 +175,10 @@ def generate_episode(
     variant = env.task_args["variant"] if "variant" in env.task_args else 0
     traj_name = f"traj_{ep_seed}" if variant == 0 else f"traj_{ep_seed}_variant_{variant}"
 
-    if not args.record_dir is None:
+    if args.record_dir is not None:
         eps_path = os.path.join(args.record_dir, traj_name)
         if os.path.exists(eps_path):
-            return
+            return False
 
     log(f"RESETTING Task {args.task} with SEED: {ep_seed}", info=True)
     obs, _ = env.reset(seed=ep_seed, options={"record_dir": eps_path, "reconfigure": True})
@@ -200,8 +206,20 @@ def generate_episode(
     episode_start_time = time.time()
     episode_action_trace = []
     last_saved_keystep_idx = -1
+    last_hold = False
     for step_idx in range(MAX_STEPS):
         action, extra_info = solver.step(obs)
+
+        if (
+            not solver._warned_has_completed
+            and solver.action_state["hold_action"]
+            and not last_hold
+        ):
+            last_hold = True
+            log(f"Solver {solver} returned an empty action at step {step_idx}.")
+            continue
+        else:
+            last_hold = False
 
         episode_action_trace.append(get_action_trace(solver))
 
@@ -252,7 +270,22 @@ def generate_episode(
     return info["success"]
 
 
-def main(args, proc_id: int = 0, num_procs: int = 1):
+def merge_unsuccessful_eps(record_dir: str) -> List[int]:
+    """Merge per-worker unsuccessful episode seed files into one deterministic list."""
+    us_eps_paths = sorted(glob.glob(os.path.join(record_dir, "unsuccessful_eps_*.npy")))
+    unsuccessful_eps = []
+    for us_path in us_eps_paths:
+        unsuccessful_eps.extend(np.load(us_path).tolist())
+
+    unsuccessful_eps = sorted(unsuccessful_eps)
+    np.save(os.path.join(record_dir, "unsuccessful_eps.npy"), unsuccessful_eps)
+    for us_path in us_eps_paths:
+        tqdm.write(f"Remove {us_path}")
+        os.remove(us_path)
+    return unsuccessful_eps
+
+
+def main(args: argparse.Namespace, proc_id: int = 0, num_procs: int = 1) -> List[str]:
     """
     This main() provides an oracle policy ClevrSkills tasks.
     :param args: Command-line args
@@ -262,7 +295,9 @@ def main(args, proc_id: int = 0, num_procs: int = 1):
     """
     assert num_procs >= 1
     setup_logger(args.log_path)
-    task_args = eval(args.task_args) if isinstance(args.task_args, str) else args.task_args
+    task_args = (
+        ast.literal_eval(args.task_args) if isinstance(args.task_args, str) else args.task_args
+    )
 
     render_config = get_render_config(args)
 
@@ -304,6 +339,7 @@ def main(args, proc_id: int = 0, num_procs: int = 1):
     while valid_eps < num_episodes:
 
         success = False
+        ep_seed = args.seed + episode_idx
         try:
             success = generate_episode(
                 args, env, ue, episode_idx, num_procs, enable_viewer=enable_viewer
@@ -321,7 +357,7 @@ def main(args, proc_id: int = 0, num_procs: int = 1):
         if success:
             valid_eps += 1
         else:
-            unsuccessful_eps.append(args.seed + episode_idx)
+            unsuccessful_eps.append(ep_seed)
 
     if args.record_dir:
         np.save(f"{args.record_dir}/unsuccessful_eps_{proc_id}.npy", unsuccessful_eps)
@@ -331,7 +367,7 @@ def main(args, proc_id: int = 0, num_procs: int = 1):
     return recordings
 
 
-def get_args_parser():
+def get_args_parser() -> argparse.ArgumentParser:
     """
     :return: Argument parser for oracle.
     """
@@ -508,13 +544,6 @@ if __name__ == "__main__":
                 tqdm.write(f"Remove {h5_path}")
                 os.remove(h5_path)
             # merging unsuccessful eps
-            us_eps_paths = sorted(glob.glob(os.path.join(args.record_dir, "unsuccessful_eps*.npy")))
-            unsuccessful_eps = []
-            for us_path in us_eps_paths:
-                unsuccessful_eps.extend(np.load(us_path).tolist())
-            np.save(os.path.join(args.record_dir, "unsuccessful_eps.npy"), unsuccessful_eps)
-            for us_path in us_eps_paths:
-                tqdm.write(f"Remove {us_path}")
-                os.remove(us_path)
+            merge_unsuccessful_eps(args.record_dir)
     else:
         main(args, proc_id=0, num_procs=1)

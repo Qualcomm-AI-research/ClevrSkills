@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Dict
 
@@ -133,7 +134,7 @@ class ThrowSolver(AbstractSolver):
             elif wrist_rot > 0.5 * np.pi:
                 delta_p = [0, 0, 0]
                 target_ori = qmult(ee_pose.q, axangle2quat([0, 0, 1], -0.5))
-            elif at_target_xy:  # and at_target_ori:
+            elif at_target_xy:
                 # gripper is above actor, move down
                 gripper = self.gripper_on
 

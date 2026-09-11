@@ -1,13 +1,16 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 """
 Some utilities for storing the action trace of a solver
 """
 
+from typing import List, Optional, Tuple
+
 import sapien.core as sapien
 
 
-def at_get_actor(actor: sapien.Actor):
+def at_get_actor(actor: sapien.Actor) -> Optional[Tuple[str, int]]:
     """
     Used to store an actor in the actor trace in a uniquely identifiable manner.
     :param actor: Any Sapien actor in the scene
@@ -19,7 +22,7 @@ def at_get_actor(actor: sapien.Actor):
     return None if actor is None else (actor.name, actor.id)
 
 
-def at_get_pose(pose: sapien.Pose):
+def at_get_pose(pose: sapien.Pose) -> Optional[Tuple[List[float], List[float]]]:
     """
     :param pose:
     :return: pose, in a form that can be stored in the action trace.
@@ -27,7 +30,7 @@ def at_get_pose(pose: sapien.Pose):
     return None if pose is None else (list(pose.p), list(pose.q))
 
 
-def at_get_pos(pos):
+def at_get_pos(pos) -> Optional[List[float]]:
     """
     :param pos: Position (np.ndarray or list)
     :return: pos, in a form that can be stored in the action trace.

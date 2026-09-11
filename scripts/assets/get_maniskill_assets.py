@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 """Download the ManiSkill assets other than vima textures."""
 from pathlib import Path
@@ -7,7 +8,7 @@ from pathlib import Path
 from mani_skill2.utils.download_asset import DATA_SOURCES, download, initialize_sources
 
 
-def download_assets():
+def download_assets() -> None:
     ASSET_DIR = Path("clevr_skills/assets/")
     # Initialize the data sources. The DATA_SOURCES dict will then be populated with
     # the download links.

@@ -1,10 +1,11 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import argparse
 import copy
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import cv2
 import numpy as np
@@ -64,7 +65,9 @@ def get_area_size(area: List[List[int]]) -> List[int]:
     return [area[1][0] - area[0][0], area[1][1] - area[0][1]]
 
 
-def crop_image(image: np.ndarray, crop: Dict[str, float], return_crop_bounds: bool = False):
+def crop_image(
+    image: np.ndarray, crop: Dict[str, float], return_crop_bounds: bool = False
+) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
     """
     (Pre-) crops an image according to the crop specification from the template.
     :param image: The image.
@@ -72,18 +75,19 @@ def crop_image(image: np.ndarray, crop: Dict[str, float], return_crop_bounds: bo
     fraction that should be cropped from each side.
     :param return_crop_bounds: return the crop bounds, in addition to the cropped image.
     Bounds are returned as numpy array ((ulx, uly), (lrx, lry)).
-    :return: If return_crop_bounds is True, return (cropped_image, bounds), otherwise just the cropped_image is returned.
+    :return: If return_crop_bounds is True, return (cropped_image, bounds),
+    otherwise return only the cropped image.
     """
     ulx = int(round(image.shape[1] * crop["left"]))
     lrx = int(round(image.shape[1] - image.shape[1] * crop["right"]))
     uly = int(round(image.shape[0] * crop["top"]))
     lry = int(round(image.shape[0] - image.shape[0] * crop["bottom"]))
     image = image[uly:lry, ulx:lrx, :]
-    bounds = np.array(((ulx, uly), (lrx, lry)), dtype=np.int)
+    bounds = np.array(((ulx, uly), (lrx, lry)), dtype=int)
     return (image, bounds) if return_crop_bounds else image
 
 
-def crop_image_area(image: np.ndarray, area: List[List[int]]):
+def crop_image_area(image: np.ndarray, area: List[List[int]]) -> np.ndarray:
     """
     :param image: The image
     :param area: The definition of the area bounds [[min_y, max_y], [min_x, max_x]]
@@ -100,7 +104,7 @@ def paste_image(
     scale: bool = False,
     pad_color: Tuple[int, int, int] = (0, 0, 0),
     rounded_corners: int = 0,
-):
+) -> np.ndarray:
     """
     Pastes src in dest with scaling and cropping, following the area definition
     :param dest: Destination image.
@@ -222,7 +226,7 @@ def draw_line_in_vertical_bar(
     image[area[0][1] : area[1][1], px, 0:3] = color
 
 
-def crop_text_image(text_image: np.ndarray):
+def crop_text_image(text_image: np.ndarray) -> np.ndarray:
     """
     Crops text image to minimal width (discarding white space on the right side).
     :param text_image: The image.
@@ -315,7 +319,7 @@ def get_text_image(
     return np.concatenate(images, axis=0)[:, :, 0:3], max_width, remaining_text
 
 
-def single_color_image(shape, color):
+def single_color_image(shape: Tuple[int, ...], color: Tuple[int, ...]) -> np.ndarray:
     """
     Returns an image of given shape, filled with color.
     :param shape: (H, W, C)
@@ -327,7 +331,12 @@ def single_color_image(shape, color):
     return image
 
 
-def _concat_row(row, image_width, background_color, alignment: str):
+def _concat_row(
+    row: List[np.ndarray],
+    image_width: int,
+    background_color: Tuple[int, int, int],
+    alignment: str,
+) -> np.ndarray:
     """
     Concatenates a row of images.
     :param row: list of images.
@@ -388,12 +397,12 @@ def _concat_row(row, image_width, background_color, alignment: str):
 
 def get_multi_modal_text_image(
     mm_text: str,
-    image_width,
-    font_size,
-    background_color=(0, 0, 0),
-    text_color=(255, 255, 255),
-    alignment="left",
-):
+    image_width: int,
+    font_size: int,
+    background_color: Tuple[int, int, int] = (0, 0, 0),
+    text_color: Tuple[int, int, int] = (255, 255, 255),
+    alignment: str = "left",
+) -> np.ndarray:
     """
     Renders multi-modal content into an image of width image_width.
     :param mm_text: a single string, or a list of strings and images
@@ -463,7 +472,7 @@ def get_multi_modal_text_image(
     return np.concatenate(rows, axis=0)
 
 
-def render_test_image(output_path) -> None:
+def render_test_image(output_path: str) -> None:
     """
     Writes the template (with all defined areas filled with green color) to output_path.
     :param output_path: Where to write the test image.
@@ -482,7 +491,7 @@ def render_test_image(output_path) -> None:
     cv2.imwrite(output_path, image)
 
 
-def main():
+def main() -> None:
     """
     A small script to test the template.
     :return:

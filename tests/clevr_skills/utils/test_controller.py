@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 import numpy as np
 from transforms3d.euler import euler2quat
 from transforms3d.quaternions import axangle2quat

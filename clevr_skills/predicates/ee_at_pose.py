@@ -1,6 +1,8 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
+
+from typing import Any, Dict, Optional
 
 import numpy as np
 from sapien.core import Pose
@@ -13,7 +15,9 @@ class EEAtPose(EnvPredicate):
     Predicate that succeeds if the end-effector is at a target pose (position + orientation)
     """
 
-    def __init__(self, env, target_pose: Pose, name=None):
+    def __init__(
+        self, env: Any, target_pose: Pose, threshold: float = 0.15, name: Optional[str] = None
+    ) -> None:
         """
         :param env: The ClevrSkillsEnv.
         :param target_pose: Target pose for the end effector.
@@ -22,17 +26,18 @@ class EEAtPose(EnvPredicate):
         name = name if name else f"EE at {target_pose}"
         super().__init__(env, name)
         self.pose = target_pose
+        self.threshold = threshold
         self._pos_diffs = []
         self._rot_diffs = []
 
-    def evaluate(self):
+    def evaluate(self) -> Dict[str, Any]:
         """
         Evaluate if the predicate is successful or not.
         :return: A dictionary containing at least "success", but also additional information.
         """
         ee_pose = self._env.agent.ee_link.pose
-        target_pos = np.copy(self.pose.p)
-        target_rot = np.copy(self.pose.q)
+        target_pos = self.pose.p
+        target_rot = self.pose.q
 
         pos_diff = np.linalg.norm(ee_pose.p - target_pos)
         rot_diff = min(
@@ -42,7 +47,7 @@ class EEAtPose(EnvPredicate):
         self._pos_diffs.append(pos_diff)
         self._rot_diffs.append(rot_diff)
 
-        ee_at_pose = (pos_diff + rot_diff) < 0.15
+        ee_at_pose = (pos_diff + rot_diff) < self.threshold
 
         return {
             "pos_diff": pos_diff,
@@ -53,18 +58,18 @@ class EEAtPose(EnvPredicate):
             "success": ee_at_pose,
         }
 
-    def compute_dense_reward(self):
+    def compute_dense_reward(self) -> float:
         """
         :return: dense reward (float in range [0, 2]).
         """
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 2.0
 
         ee_pose = self._env.agent.ee_link.pose
-        target_pos = np.copy(self.pose.p)
-        target_rot = np.copy(self.pose.q)
+        target_pos = self.pose.p
+        target_rot = self.pose.q
 
         return 2.0 - (
             np.linalg.norm(ee_pose.p - target_pos) + np.linalg.norm(ee_pose.q - target_rot)

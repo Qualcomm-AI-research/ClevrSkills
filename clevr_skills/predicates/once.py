@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 
 from .predicate import Predicate
@@ -33,12 +34,12 @@ class Once(Predicate):
         :return: A dictionary containing at least "success", but also additional information.
         """
         if self._eval_at_first_success is None:
-            eval = self._predicate.evaluate()
-            self._success = eval["success"]
+            eval_result = self._predicate.evaluate()
+            self._success = eval_result["success"]
             if self._success:
                 self._dense_reward_at_first_success = self.compute_dense_reward()
-                self._eval_at_first_success = eval
-            return eval
+                self._eval_at_first_success = eval_result
+            return eval_result
         return self._eval_at_first_success
 
     def compute_dense_reward(self):

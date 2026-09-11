@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 # This script copies over the Panda robot from ManiSkill2
 # This makes it more straightforward to load from ClevrSkills
@@ -130,7 +131,7 @@ def apply_srdf_patch(maniskill2_urdf_path: str, patch_path: str, output_path: st
     return urdf_path
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--maniskill2-urdf-path",

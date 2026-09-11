@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Dict, List
 
@@ -66,24 +67,26 @@ class BalanceScaleSolver(AbstractSolver):
         :return: The action, given the observation. Note that most solvers use privileged information
         from the ClevrSkillsEnv
         """
-        eval = self.predicate.evaluate(return_by_name=False)
+        eval_result = self.predicate.evaluate(return_by_name=False)
         self._num_steps += 1
 
-        if eval["success"] or self._num_steps < 20:
+        if eval_result["success"] or self._num_steps < 20:
             return self.return_hold_action(self.gripper_off)
 
         if self._sub_solver and self._sub_solver.is_done():
             self._sub_solver = None
 
         if self._sub_solver is None:
-            incorrectly_placed_actors = eval["incorrect_plate1"] + eval["incorrect_plate2"]
+            incorrectly_placed_actors = (
+                eval_result["incorrect_plate1"] + eval_result["incorrect_plate2"]
+            )
 
             # figure out which actors can be picked up
             pickup_actors = []
             if len(incorrectly_placed_actors):
                 pickup_actors += incorrectly_placed_actors
             else:
-                pickup_actors += eval["unplaced"]
+                pickup_actors += eval_result["unplaced"]
 
             # Select the actor closest to the gripper to pick up
             tcp_pos = self._env.agent.ee_link.pose.p

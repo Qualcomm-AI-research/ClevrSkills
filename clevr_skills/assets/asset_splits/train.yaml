@@ -1,3 +1,9 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# Asset split configuration for ClevrSkills task object and texture pools.
+# Hydra/OmegaConf-style ${...} placeholders are resolved at runtime.
+
 base_objects:
   - '024_bowl'
   - '025_mug'
@@ -10,7 +16,7 @@ base_objects:
   - '7' #= pentagon shape
   - '8' #= rectangle shape
   - '9' #= 4 bubbles
-  - '10' #= 5 pointed star 
+  - '10' #= 5 pointed star
   - '11' #= disc (circle)
   - '17' #= hexagon shape
 
@@ -35,7 +41,7 @@ top_objects:
   - '7' #= pentagon shape
   - '8' #= rectangle shape
   - '9' #= 4 bubbles
-  - '10' #= 5 pointed star 
+  - '10' #= 5 pointed star
   - '11' #= disc (circle)
   - '14' #= E
   - '15' #= L
@@ -43,15 +49,34 @@ top_objects:
   - '17' #= hexagon shape
   - '19' #= M
 
+top_objects_simple:
+  #assembling kit objects
+  - '0' #= R
+  - '1' #= A
+  - '2' #= triangle shape
+  - '3' #= square shape
+  - '4' #= plus shape
+  - '5' #= T
+  - '8' #= rectangle shape
+  - '11' #= disc (circle)
+  - '14' #= E
+  - '15' #= L
+  - '16' #= O
+  - '18' #= heart shape
+  - '19' #= M
+
 random_objects:
   - '011_banana'
   - '013_apple'
+  - '031_spoon'
+  - '032_knife'
   - '038_padlock'
   - '040_large_marker'
   - '042_adjustable_wrench'
   - '050_medium_clamp'
   - '051_large_clamp'
-  - '054_softball' 
+  - '053_mini_soccer_ball'
+  - '054_softball'
   - '056_tennis_ball'
   - '057_racquetball'
   - '071_nine_hole_peg_test'
@@ -132,6 +157,17 @@ texture_2_dark:
   - 'dark yellow green polka dot'
   - 'dark yellow purple polka dot'
 
+texture_simple:
+  - 'white'
+  - 'yellow'
+  - 'red'
+  - 'grey'
+  - 'purple'
+  - 'black'
+  - 'blue'
+  - 'green'
+
+
 # tasks
 SingleStack:
   top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
@@ -181,11 +217,11 @@ PlaceOnTop:
   base_textures: ${merge:${texture_2},${texture_2_dark}}
 
 PlaceNextTo:
-  top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
+  top_objects: ${merge:${top_objects_simple},${primitive_objects}}
   base_objects: ${merge:${base_objects},${primitive_objects}}
   random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
-  top_textures: ${merge:${texture_1},${texture_1_dark}}
-  base_textures: ${merge:${texture_2},${texture_2_dark}}
+  top_textures: ${texture_simple} 
+  base_textures: ${texture_simple} 
 
 Rotate:
   top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
@@ -214,6 +250,14 @@ BalanceScale:
 Pick:
   top_objects: ${merge:${top_objects},${random_objects},${primitive_objects}}
   base_objects: ${merge:${base_objects},${primitive_objects}}
+  random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
+  primitive_objects: ${primitive_objects}
+  top_textures: ${merge:${texture_1},${texture_1_dark}}
+  base_textures: ${merge:${texture_2},${texture_2_dark}}
+
+TouchPick:
+  top_objects: ${merge:${primitive_objects}}
+  base_objects: ${merge:${primitive_objects}}
   random_objects: ${merge:${top_objects},${random_objects},${primitive_objects},${base_objects}}
   primitive_objects: ${primitive_objects}
   top_textures: ${merge:${texture_1},${texture_1_dark}}

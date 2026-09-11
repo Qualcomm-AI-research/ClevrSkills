@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List, Union
 
@@ -17,7 +18,8 @@ def get_actor_by_name(actors, names: Union[List[str], str]):
     :return: The selected actors. Length will be len(names).
     Each entry will be one of the actors, or None if not found.
     """
-    assert isinstance(actors, (list, tuple))
+    if not isinstance(actors, (list, tuple)):
+        raise TypeError(f"actors must be a list or tuple, got {type(actors)}")
     # Actors can be joint and link
     if isinstance(names, str):
         names = [names]

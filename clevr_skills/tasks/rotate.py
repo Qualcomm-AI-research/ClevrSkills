@@ -1,12 +1,15 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from typing import List
 
 import sapien.core as sapien
 
+from clevr_skills.predicates.at_position import AtPosition
 from clevr_skills.predicates.order import Order
+from clevr_skills.predicates.pick_predicate import PickPredicate
 from clevr_skills.predicates.rotate_predicate import RotatePredicate
+from clevr_skills.utils.action_trace import at_get_pose
 from clevr_skills.utils.render import get_render_material
 from clevr_skills.utils.visualize_prompt import get_actor_description, get_texture_description
 
@@ -95,20 +98,39 @@ class Rotate(Task):
 
         self.main_ac_idx = self._episode_rng.choice(self._num_actors)
         predicates = [
+            PickPredicate(
+                self._env, self._actors[self.main_ac_idx], name="pick", clear_distance=0.01
+            ),
             RotatePredicate(
-                self._env, self._actors[self.main_ac_idx], self.rot_degrees, self.clockwise
-            )
+                self._env,
+                self._actors[self.main_ac_idx],
+                self.rot_degrees,
+                self.clockwise,
+            ),
+            AtPosition(
+                self._env, self._actors[self.main_ac_idx], self._actors[self.main_ac_idx].get_pose()
+            ),
         ]
 
         if self.restore:
-            predicates.append(
-                RotatePredicate(
-                    self._env,
-                    self._actors[self.main_ac_idx],
-                    self.rot_degrees,
-                    self.clockwise,
-                    restore=True,
-                )
+            predicates.extend(
+                [
+                    PickPredicate(
+                        self._env, self._actors[self.main_ac_idx], name="pick", clear_distance=0.01
+                    ),
+                    RotatePredicate(
+                        self._env,
+                        self._actors[self.main_ac_idx],
+                        self.rot_degrees,
+                        self.clockwise,
+                        restore=True,
+                    ),
+                    AtPosition(
+                        self._env,
+                        self._actors[self.main_ac_idx],
+                        self._actors[self.main_ac_idx].get_pose(),
+                    ),
+                ]
             )
 
         self.predicate = Order("rotate", predicates)
@@ -129,6 +151,16 @@ class Rotate(Task):
                 f"degrees {['anti-clockwise', 'clockwise'][self.clockwise]} and "
                 f"then restore",
             ]
+
+        self.init_state = {
+            "objects": {
+                get_actor_description(act): str(at_get_pose(act.pose)) for act in self._actors
+            },
+            "rot_degrees": str(self.rot_degrees),
+            "clockwise": str(self.clockwise),
+            "main_actor_idx": str(self.main_ac_idx),
+            "main_object": get_actor_description(self._actors[self.main_ac_idx]),
+        }
 
     def get_task_actors(self) -> List[sapien.Actor]:
         """

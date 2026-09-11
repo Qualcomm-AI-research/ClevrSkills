@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import sapien.core as sapien
@@ -69,13 +70,13 @@ class OnTop(EnvPredicate):
         """
         :return: dense reward (float in range [0, 6]).
         """
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 6.0
-        if eval["top_actor_resting_on_bottom_actor"]:
-            return 5.0 + (0.0 if eval["top_actor_grasped"] else 1.0)
-        if eval["top_actor_grasped"]:  # max 5 reward
+        if eval_result["top_actor_resting_on_bottom_actor"]:
+            return 5.0 + (0.0 if eval_result["top_actor_grasped"] else 1.0)
+        if eval_result["top_actor_grasped"]:  # max 5 reward
             CLOSE = 0.03
             dist_xy = np.linalg.norm(self.top_actor.pose.p[0:2] - self.bottom_actor.pose.p[0:2])
             dist_z = self.top_actor.pose.p[2] - self.bottom_actor.pose.p[2]

@@ -1,6 +1,7 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
+import re
 from typing import Dict
 
 import cv2
@@ -104,8 +105,30 @@ class RecordPrettyEnv(RecordEnv):
             latc = LlavaActionTraceConverter(traj_path)
             labels = latc.extract_labels(prompt)
             action_labels = latc.expand_labels(labels, len(self._render_images))
+        elif self.action_label_visualization_mode == "vla_thoughts":
+            action_labels = [[] for _ in self._render_images]
+            for idx, _ in enumerate(self._render_images):
+                if idx in self.extra_info and "scratchpad" in self.extra_info[idx]:
+                    scratchpad = self.extra_info[idx]["scratchpad"]
+                    action_labels[idx] = [line for line in scratchpad.split("\n") if line]
 
         return action_labels
+
+    def _sanitize_action_label(self, label):
+        """
+        Removes unimplemented-label suffixes while preserving the solver name.
+        """
+        if isinstance(label, str):
+            label = re.sub(
+                r"\s*(?:#?\s*(?:to\s*do:?|todo:?)?\s*not implemented|this case is\s+not implemented).*$",
+                "",
+                label,
+                flags=re.IGNORECASE,
+            )
+            return re.sub(r"[\s:#-]+$", "", label)
+        if isinstance(label, (list, tuple)):
+            return [sanitized for item in label if (sanitized := self._sanitize_action_label(item))]
+        return label
 
     def _get_actor_colors(self):
         """
@@ -206,7 +229,7 @@ class RecordPrettyEnv(RecordEnv):
                 text_color = white if np.mean(color) < 128 else black
 
                 box_coords = np.matmul(transform, box_coords.T).T
-                box_coords = np.round(box_coords).astype(np.int)
+                box_coords = np.round(box_coords).astype(int)
                 box_coords[0, 0] = max(box_coords[0, 0], area[0][0])
                 box_coords[0, 1] = max(box_coords[0, 1], area[0][1])
                 box_coords[1, 0] = min(box_coords[1, 0], area[1][0])
@@ -414,9 +437,18 @@ class RecordPrettyEnv(RecordEnv):
             area_size = get_area_size(area)
             text_colors = self.template["action_log_text_color"]
             font_sizes = self.template["action_log_font_size"]
-            if idx in self.extra_info and "act_label" in self.extra_info[idx]:
+            if idx in self.extra_info and (
+                "act_label" in self.extra_info[idx]
+                or (
+                    self.action_label_visualization_mode == "vla_thoughts"
+                    and len(action_labels[idx]) > 0
+                )
+            ):
                 labels = action_labels[idx]
                 for depth, label in enumerate(labels):
+                    label = self._sanitize_action_label(label)
+                    if not label:
+                        continue
                     if last_action_labels[depth] != label:
                         last_action_labels[depth] = label
                         for d in range(depth + 1, len(last_action_labels)):

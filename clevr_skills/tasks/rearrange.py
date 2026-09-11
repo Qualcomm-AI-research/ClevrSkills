@@ -1,5 +1,5 @@
-# Copyright (c) 2024 Qualcomm Technologies, Inc.
-# All Rights Reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 from typing import List
 
@@ -9,10 +9,11 @@ from clevr_skills.predicates.at_position import AtPosition
 from clevr_skills.predicates.at_position_pushed import AtPositionPushed
 from clevr_skills.predicates.order import Order
 from clevr_skills.predicates.set import Set
-from clevr_skills.utils.action_trace import at_get_actor
+from clevr_skills.utils.action_trace import at_get_actor, at_get_pose
 from clevr_skills.utils.actor_placement import get_random_non_overlapping_poses_2d_with_actor_sizes
 from clevr_skills.utils.models import get_actor_size
 from clevr_skills.utils.render import get_render_material
+from clevr_skills.utils.visualize_prompt import get_actor_description, get_texture_description
 
 from .task import Task, register_task
 
@@ -137,6 +138,15 @@ class Rearrange(Task):
                 else f"Rearrange to {keystep_image_name}"
             )
         ]
+
+        self.init_state = {
+            "objects": {
+                get_actor_description(act): str(at_get_pose(act.pose)) for act in self._actors
+            },
+            "target_poses": {
+                str(idx): str(self._target_poses[idx]) for idx in range(len(self._target_poses))
+            },
+        }
 
     def get_task_actors(self) -> List[sapien.Actor]:
         """

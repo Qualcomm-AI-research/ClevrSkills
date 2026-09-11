@@ -1,5 +1,6 @@
 # Copyright (c) 2024 Qualcomm Technologies, Inc.
 # All Rights Reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import sapien.core as sapien
@@ -65,16 +66,16 @@ class AtPosition(EnvPredicate):
         """
         :return: dense reward (float in range [0, 6])
         """
-        eval = self.evaluate()
+        eval_result = self.evaluate()
 
-        if eval["success"]:
+        if eval_result["success"]:
             return 6.0
 
-        if (self._match_ori and eval["actor_at_pose"]) or (
-            not self._match_ori and eval["actor_at_pos"]
+        if (self._match_ori and eval_result["actor_at_pose"]) or (
+            not self._match_ori and eval_result["actor_at_pos"]
         ):
-            return 5.0 + (0.0 if eval["actor_grasped"] else 1.0)
-        if eval["actor_grasped"]:  # max 5 reward
+            return 5.0 + (0.0 if eval_result["actor_grasped"] else 1.0)
+        if eval_result["actor_grasped"]:  # max 5 reward
             CLOSE = 0.03
             dist_xy = np.linalg.norm(self.actor.pose.p[0:2] - self.pose.p[0:2])
             dist_z = self.actor.pose.p[2] - self.pose.p[2]
